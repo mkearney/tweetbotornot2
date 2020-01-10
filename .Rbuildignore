@@ -1,0 +1,7 @@
+^twitterbot\.Rproj$
+^\.Rproj\.user$
+^data-raw$
+^README\.Rmd$
+^\.httr-oauth$
+^LICENSE\.md$
+^working\.R$

@@ -1,0 +1,30 @@
+Package: tweetbotornot2
+Title: Detect Twitter Bots
+Version: 0.0.1
+Authors@R: 
+    person("Michael W.", "Kearney", ,
+      email = "kearneymw@missouri.edu", role = c("aut", "cre"),
+      comment = c(ORCID = "0000-0002-0730-4694"))
+Description: This package provides an out-of-the-box classifier for detecting Twitter bots
+    that is easy to use, volume-friendly (classify over two hundred thousands accounts per day),
+    accurate (see paper), robust and customizable (update the model with new or user-defined training data),
+    and explainable (view contributions for features used in estimates).
+Depends:
+    R (>= 3.1.0)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Imports: 
+    rtweet,
+    tfse,
+    dapr,
+    data.table,
+    wactor,
+    stats,
+    xgboost
+RoxygenNote: 7.0.2
+Suggests: 
+    testthat (>= 2.1.0)
+URL: https://github.com/mkearney/tweetbotornot2
+BugReports: https://github.com/mkearney/tweetbotornot2/issues

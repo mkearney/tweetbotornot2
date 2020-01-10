@@ -1,0 +1,11 @@
+test_that("predict_bot works", {
+  skip_on_cran()
+  x <- predict_bot(c("twitter", "jack"))
+  expect_true(is.data.frame(x))
+  expect_true(inherits(x, "data.table"))
+  expect_true(nrow(x) == 2)
+  expect_equal(ncol(x), 3)
+  expect_true(all(c("user_id", "screen_name", "prob_bot") %in% names(x)))
+  x <- data.frame(x = 1:5, y = letters[1:5])
+  expect_error(predict_bot(x))
+})
