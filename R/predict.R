@@ -7,24 +7,24 @@
 #' @return A data frame with the user id, screen name, and estimated probability
 #'   of being a bot
 #' @export
-tweetbotornot_predict <- function(x) {
-  UseMethod("tweetbotornot_predict")
+predict_bot <- function(x) {
+  UseMethod("predict_bot")
 }
 
 #' @export
-tweetbotornot_predict.character <- function(x) {
+predict_bot.character <- function(x) {
   x <- rtweet::get_timelines(x, n = 200, check = FALSE)
-  tweetbotornot_predict(x)
+  predict_bot(x)
 }
 
 #' @export
-tweetbotornot_predict.data.frame <- function(x) {
+predict_bot.data.frame <- function(x) {
   x <- data.table::data.table(x)
-  tweetbotornot_predict(x)
+  predict_bot(x)
 }
 
 #' @export
-tweetbotornot_predict.data.table <- function(x) {
+predict_bot.data.table <- function(x) {
   ##--------------------------------------------------------------------------##
   ##                           (FOR CRAN CHECKS)                              ##
   ##--------------------------------------------------------------------------##
@@ -34,7 +34,7 @@ tweetbotornot_predict.data.table <- function(x) {
   prob_bot <- NULL
 
   if (!all(tweetbotornot_xgb_model$feature_names %in% names(x))) {
-    x <- tweetbotornot_preprocess(x)
+    x <- preprocess_bot(x)
   }
   o <- x[, .(user_id, screen_name, prob_bot)]
   o$prob_bot <- stats::predict(tweetbotornot_xgb_model,

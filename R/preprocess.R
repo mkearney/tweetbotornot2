@@ -6,29 +6,29 @@
 #' @param x Input either a user identifier or Twitter data
 #' @return Returns a data frame used to generate predictions
 #' @export
-tweetbotornot_preprocess <- function(x, batch_size = 100) UseMethod("tweetbotornot_preprocess")
+preprocess_bot <- function(x, batch_size = 100) UseMethod("preprocess_bot")
 
 #' @export
-tweetbotornot_preprocess.character <- function(x, batch_size = 100) {
+preprocess_bot.character <- function(x, batch_size = 100) {
   x <- rtweet::get_timelines(x, n = 200, check = FALSE)
-  tweetbotornot_preprocess(x, batch_size = batch_size)
+  preprocess_bot(x, batch_size = batch_size)
 }
 
 #' @export
-tweetbotornot_preprocess.data.frame <- function(x, batch_size = 100) {
+preprocess_bot.data.frame <- function(x, batch_size = 100) {
   x <- data.table::data.table(x)
-  tweetbotornot_preprocess(x, batch_size = batch_size)
+  preprocess_bot(x, batch_size = batch_size)
 }
 
 #' @export
-tweetbotornot_preprocess.data.table <- function(x, batch_size = 100) {
+preprocess_bot.data.table <- function(x, batch_size = 100) {
   ## (wrangling with none or non-intensive grouping)
-  x <- tweetbotornot_preprocess_init(x)
+  x <- preprocess_bot_init(x)
 
   ## if no batches, process and return
   uid <- unique(x[, user_id])
   if (is.null(batch_size) || isFALSE(batch_size) || length(uid) < batch_size) {
-    return(tweetbotornot_preprocess_group(x))
+    return(preprocess_bot_group(x))
   }
 
   ## split data by user
@@ -50,14 +50,14 @@ tweetbotornot_preprocess.data.table <- function(x, batch_size = 100) {
   ## iterate through split data
   x <- lapply(x, function(.x) {
     tryCatch(pb$tick(1), error = function(e) return(NULL))
-    return(tweetbotornot_preprocess_group(.x))
+    return(preprocess_bot_group(.x))
   })
 
   ## bind into data frame and return
   do.call("rbind", x)
 }
 
-tweetbotornot_preprocess_init <- function(x) {
+preprocess_bot_init <- function(x) {
   ##--------------------------------------------------------------------------##
   ##                           (FOR CRAN CHECKS)                              ##
   ##--------------------------------------------------------------------------##
@@ -128,7 +128,7 @@ tweetbotornot_preprocess_init <- function(x) {
 }
 
 
-tweetbotornot_preprocess_group <- function(data) {
+preprocess_bot_group <- function(data) {
   ##--------------------------------------------------------------------------##
   ##                           (FOR CRAN CHECKS)                              ##
   ##--------------------------------------------------------------------------##

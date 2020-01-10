@@ -23,8 +23,8 @@
 #' }
 #'
 #' @export
-tweetbotornot_sample <- function(x, n = 1000, regex, ...) {
-  UseMethod("tweetbotornot_sample")
+sample_via_twitter_lists <- function(x, n = 1000, regex, ...) {
+  UseMethod("sample_via_twitter_lists")
 }
 
 
@@ -43,15 +43,15 @@ tweetbotornot_get_timelines <- function(x, ...) {
 }
 
 #' @export
-tweetbotornot_sample.data.frame <- function(x, n = 100, regex, ...) {
+sample_via_twitter_lists.data.frame <- function(x, n = 100, regex, ...) {
   x <- data.table::as.data.table(x)
-  tweetbotornot_sample(x, n = n, regex = regex, ...)
+  sample_via_twitter_lists(x, n = n, regex = regex, ...)
 }
 
-tweetbotornot_sample.twist <- function(x, n = 1000, regex = NULL, ...) {
+sample_via_twitter_lists.twist <- function(x, n = 1000, regex = NULL, ...) {
   if (is_ids(x)) {
     x <- data.table::data.table(list_id = as.character(x))
-    return(tweetbotornot_sample(x, n = n, regex = regex, ...))
+    return(sample_via_twitter_lists(x, n = n, regex = regex, ...))
   }
   ## if list path
   if (all(grepl("/lists/", x))) {
@@ -61,13 +61,13 @@ tweetbotornot_sample.twist <- function(x, n = 1000, regex = NULL, ...) {
     x <- gsub("^/|/?$|@", "", x)
     x <- strsplit(x, "/")
   } else {
-    stop("tweetbotornot_sample input should be Twitter users or Twitter lists")
+    stop("sample_via_twitter_lists input should be Twitter users or Twitter lists")
   }
   x <- data.table::data.table(
     owner_user = dapr::vap_chr(x, `[[`, 1L),
     slug = dapr::vap_chr(x, `[[`, 2L)
   )
-  tweetbotornot_sample(x, n = n, regex = regex, ...)
+  sample_via_twitter_lists(x, n = n, regex = regex, ...)
 }
 
 add_class <- function(x, cl) {
@@ -75,14 +75,14 @@ add_class <- function(x, cl) {
 }
 
 #' @export
-tweetbotornot_sample.character <- function(x, n = 100, regex = NULL, ...) {
+sample_via_twitter_lists.character <- function(x, n = 100, regex = NULL, ...) {
   if (all(grepl("/", x))) {
     x <- add_class(x, "twist")
-    return(tweetbotornot_sample(x = x, n = n, regex = regex, ...))
+    return(sample_via_twitter_lists(x = x, n = n, regex = regex, ...))
   }
   ## if `user_id` or `screen_name`
   if (!is_user(x)) {
-    stop("tweetbotornot_sample expected a vector of user IDs or screen names")
+    stop("sample_via_twitter_lists expected a vector of user IDs or screen names")
   }
   x <- dapr::lap(x, user_lists, n = ceiling(n / 200) * 200, ...)
   x <- do.call("rbind", x)
@@ -105,11 +105,11 @@ tweetbotornot_sample.character <- function(x, n = 100, regex = NULL, ...) {
   } else {
     x <- x[c(TRUE, cumsum(member_count)[-length(member_count)]) < (count), ]
   }
-  tweetbotornot_sample(x = x, n = n, regex = regex, ...)
+  sample_via_twitter_lists(x = x, n = n, regex = regex, ...)
 }
 
 #' @export
-tweetbotornot_sample.data.table <- function(x, n = 100, regex, ...) {
+sample_via_twitter_lists.data.table <- function(x, n = 100, regex, ...) {
   if (!"list_id" %in% names(x) &&
       !all(c("owner_user", "slug") %in% names(x))) {
     if ("user_id" %in% names(x)) {
@@ -119,7 +119,7 @@ tweetbotornot_sample.data.table <- function(x, n = 100, regex, ...) {
     } else {
       stop("data frame input must include (1) user_id, (2) list_id, or (3) owner_user and slug")
     }
-    return(tweetbotornot_sample(x, n = n, regex = regex, ...))
+    return(sample_via_twitter_lists(x, n = n, regex = regex, ...))
   }
   l <- vector("list", nrow(x))
   if ("list_id" %in% names(x)) {
@@ -172,7 +172,7 @@ tweetbotornot_sample.data.table <- function(x, n = 100, regex, ...) {
   utils::head(l, n)
 }
 
-tweetbotornot_sample_nots <- function(x) {
+sample_via_twitter_lists_nots <- function(x) {
   "person|people|man|real|friend"
 }
 
@@ -272,7 +272,7 @@ format.bot <- function(x) {
 
 
 
-tweetbotornot_sample_lists <- function(users, regex, ...) {
+sample_via_twitter_lists_lists <- function(users, regex, ...) {
   slug <- NULL
   name <- NULL
   list_id <- NULL

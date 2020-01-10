@@ -4,7 +4,7 @@
 #'
 #' @param x Input data either character vector of Twitter identifiers (user IDs
 #'   or screen names), data frame of Twitter data, or predictions returned by
-#'   tweetbotornot_explain
+#'   explain_bot
 #' @return A data frame with the user id, screen name, probability estimate,
 #'   feature name, and feature contribution
 #' @examples
@@ -12,7 +12,7 @@
 #' \dontrun{
 #'
 #' ## estimate prediction and return with feature contribution
-#' kmw <- tweetbotornot_explain("kearneymw")
+#' kmw <- explain_bot("kearneymw")
 #'
 #' ## view data
 #' kmw
@@ -25,32 +25,32 @@
 #'  ]
 #' }
 #' @export
-tweetbotornot_explain <- function(x) {
-  UseMethod("tweetbotornot_explain")
+explain_bot <- function(x) {
+  UseMethod("explain_bot")
 }
 
 #' @export
-tweetbotornot_explain.character <- function(x) {
-  x <- tweetbotornot_predict(x)
-  tweetbotornot_explain(x)
+explain_bot.character <- function(x) {
+  x <- predict_bot(x)
+  explain_bot(x)
 }
 
 #' @export
-tweetbotornot_explain.data.frame <- function(x) {
+explain_bot.data.frame <- function(x) {
   x <- data.table::data.table(x)
-  tweetbotornot_explain(x)
+  explain_bot(x)
 }
 
 
 #' @export
-tweetbotornot_explain.data.table <- function(x) {
+explain_bot.data.table <- function(x) {
   . <- NULL
   user_id <- NULL
   screen_name <- NULL
   bot <- NULL
   value <- NULL
   if (!"prob_bot" %in% names(x)) {
-    x <- tweetbotornot_predict(x)
+    x <- predict_bot(x)
   }
   p <- x[, prob_bot]
   x <- get_model_data(x)

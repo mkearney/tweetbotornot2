@@ -36,17 +36,17 @@ install.packages("tweetbotornot2")
 
 ## Apply Model
 
-### `tweetbotornot_predict()`: Predicts (apply classifier to) new data
+### `predict_bot()`: Predicts (apply classifier to) new data
 
-Simply input the names of Twitter users of interest and `tweetbotornot_predict()` 
+Simply input the names of Twitter users of interest and `predict_bot()` 
 returns the estimated probability that one or more Twitter accounts is a bot.
 
 ``` r
 ## pass screen names to predict function
-tweetbotornot_predict(c("MagicRealismBot", "netflix_bot", "rdpeng", "hspter"))
+predict_bot(c("MagicRealismBot", "netflix_bot", "rdpeng", "hspter"))
 ```
 
-`tweetbotornot_predict()` also accepts previously collected Twitter data (e.g., data returned by `rtweet::get_timelines()`)
+`predict_bot()` also accepts previously collected Twitter data (e.g., data returned by `rtweet::get_timelines()`)
 
 ```{r}
 ## estimate bot probabilities
@@ -72,28 +72,28 @@ twtdat <- rtweet::get_timelines(
   n = 200, check = FALSE)
 
 ## view output (order most likely to least like bot)
-tweetbotornot_predict(twtdat)[order(-prob_bot), ]
+predict_bot(twtdat)[order(-prob_bot), ]
 ```
 
-### `tweetbotornot_explain()` Explains the contributions from each feature on the estimated probability
+### `explain_bot()` Explains the contributions from each feature on the estimated probability
 
 Examine prediction contributions for features in the model
 
 ```{r}
 ## view top features in predictions of each user
-tweetbotornot_explain(twtdat)[feature %in% feature[1:4], .SD, on = "feature"][1:16, -1]
+explain_bot(twtdat)[feature %in% feature[1:4], .SD, on = "feature"][1:16, -1]
 ```
 
 
 ## Update Model
 
-### `tweetbotornot_sample()` Uses Twitter lists to snowball sample from a few users (input) to hundreds or even thousands of users (output)
+### `sample_via_twitter_lists()` Uses Twitter lists to snowball sample from a few users (input) to hundreds or even thousands of users (output)
 
 Find and label "bot" and "not" (bot) Twitter accounts via snowball sampling
 
 ``` r
 ## find up to 10,000 accounts similar to these well-known Twitter bots
-bots <- tweetbotornot_sample(c("netflix_bot", "American__Voter", "UTLEGtracker", 
+bots <- sample_via_twitter_lists(c("netflix_bot", "American__Voter", "UTLEGtracker", 
   "JVLast", "EndlessJeopardy", "PossumEveryHour", "MagicRealismBot", "factbot1"), 
   n = 10000)
 
@@ -101,13 +101,13 @@ bots <- tweetbotornot_sample(c("netflix_bot", "American__Voter", "UTLEGtracker",
 bots_tmls <- tweetbotornot_collect(bots)
 ```
 
-### `tweetbotornot_preprocess()` Prepares timeline data for modeling
+### `preprocess_bot()` Prepares timeline data for modeling
 
 Extract and transform numeric features from the data
 
 ``` r
 ## wrangle, munge, aggregate data for modelling
-tweetbotornot_preprocess(twtdat)
+preprocess_bot(twtdat)
 ```
 
 
@@ -120,7 +120,7 @@ Add updated or your own take on bot/not data to further train the classifier
 new_model <- tweetbotornot_update(newdata)
 
 ## use updated model to get new predictions
-tweetbotornot_predict(new_model, c("netflix_bot", "mindykaling"))
+predict_bot(new_model, c("netflix_bot", "mindykaling"))
 ```
 
 
