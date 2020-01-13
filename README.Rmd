@@ -149,6 +149,7 @@ How features contributed to predictions in the original training data:
 
 ```{r, include=FALSE, eval=FALSE}
 .d <- tfse::read_RDS("../twbt/data-final-munged.rds")
+.d <- .d[screen_name != "DavidGuzzy", ]
 
 png("man/figures/README-shap.png", width = 9, height = 8, units = "in", res = 312)
 par(tcl = -0.175, bty = "n", xaxt = "s", yaxt = "s", col = "#aaaaaa")
@@ -157,7 +158,7 @@ suppressWarnings(
   xgboost::xgb.plot.shap(
     data = as.matrix(.d[, -(1:3)]),
     trees = 1:150,
-    model = tweetbotornot_xgb_model,
+    model = tweetbotornot2:::tweetbotornot_xgb_model,
     top_n = 36, n_col = 6,
     discrete_jitter = 0.15, span_loess = 0.35, col_loess = cols[1],
     col = cols[2],
