@@ -16,10 +16,10 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 Imports: 
-    rtweet,
-    tfse,
-    dapr,
-    data.table,
+    rtweet (>= 0.7.0),
+    tfse (>= 0.5.0),
+    dapr (>= 0.0.3),
+    data.table (>= 1.12.8),
     wactor,
     stats,
     xgboost,
@@ -27,6 +27,7 @@ Imports:
     progress
 RoxygenNote: 7.0.2
 Suggests: 
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    covr
 URL: https://github.com/mkearney/tweetbotornot2
 BugReports: https://github.com/mkearney/tweetbotornot2/issues
