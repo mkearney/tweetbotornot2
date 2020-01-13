@@ -21,4 +21,13 @@ test_that("preprocess_bot works", {
   expect_true(all(c("user_id", "screen_name", "bot", "tweets", "usr_prfimNA") %in% names(x)))
   x <- data.frame(x = 1:5, y = letters[1:5])
   expect_error(preprocess_bot(x))
+
+  x <- data.frame(screen_name = c("kearneymw", "netflix_bot"))
+  x <- preprocess_bot(x, token = token)
+  expect_true(is.data.frame(x))
+  expect_true(inherits(x, "data.table"))
+  expect_true(nrow(x) == 2)
+  expect_equal(ncol(x), 58)
+  expect_true(all(c("user_id", "screen_name", "bot", "tweets", "usr_prfimNA") %in% names(x)))
+
 })

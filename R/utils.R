@@ -25,55 +25,14 @@ min_freq <- function(x) {
   min(tabulate(factor(x, levels = levs)))
 }
 
-percentile <- function(x) {
-  dapr::vap_dbl(x, ~ (sum(x < .x) + 0.5 * sum(x == .x)) / length(x))
-}
-
 factor_ <- function(x, levels) {
   x[!x %in% levels] <- "NA"
   factor(x, levels)
 }
 
-the_mode <- function(x) {
-  uq <- unique(x)
-  if (is.character(x)) {
-    x <- as.integer(factor(x,
-      levels = uq, ordered = FALSE, exclude = FALSE))
-  }
-  uq[which.max(tabulate(x, nbins = length(uq)))]
-}
-
 as_source_type <- function(x) {
   x <- source_types$type[match(x, source_types$source)]
   x[is.na(x)] <- "NA"
-  x
-}
-
-## for profile_image_url:      "", "gif", "jpeg", "jpg", "png"
-## for profile_background_url: "", "gif", "png"
-imge_levs <- c("gif", "jpeg", "jpg", "png", "NA")
-bkgr_levs <- c("gif", "png", "NA")
-
-as_image_type <- function(x) tolower(tfse::regmatches_first(x, "(?<=\\.)[[:alpha:]]+$"))
-#table(is.na(.d$profile_banner_url))
-
-dom_levs <- c("bit","cafedefaune","cheapbotsdonequick","decontextualize",
-  "facebook","github","imdb","instagram","muffinlabs","patreon","theathletic",
-  "twitch","twitter","wikipedia","youtu","youtube","NA")
-as_dom <- function(x) {
-  ifelse(is.na(x) | !x %in% dom_levs, "NA", x)
-}
-as_imge <- function(x) {
-  ifelse(is.na(x) | !x %in% imge_levs, "NA", x)
-}
-as_bkgr <- function(x) {
-  ifelse(is.na(x) | !x %in% bkgr_levs, "NA", x)
-}
-urldom <- function(x) {
-  x <- tfse::regmatches_first(tolower(x), "(?<=://)[^/]+")
-  x <- sub(paste0("^(", paste(c("www", "m", lang_levs),
-    collapse = "|"), ")\\."), "", x)
-  x <- sub("\\..*", "", x)
   x
 }
 
@@ -85,16 +44,6 @@ max_round_time_2sec <- function(x) {
     nbins = length(uq)))
 }
 
-# lang_levs <- c("en","it","cy","nl","is","und","vi","el","et","ja","ca","fr",
-#   "de","in","es","pt","pl","tl","ht","lt","no","fi","tr","ro","da","hi","sv",
-#   "eu","cs","hu","sl","ru","zh","uk","lv","ar","ko","fa","ne","th","ml","am",
-#   "iw","ur","bg","bo","bn","sr","ka","ta","hy","ps","mr","gu","pa","si","or",
-#   "dv","kn","te","ckb","NA")
-lang_levs <- c("ar","ca","de","en","es","et","fi","fr","hi","ht","in","it","ja",
-  "ko","nl","pt","ro","ru","sv","tl","tr","und","NA")
-as_lang <- function(x) {
-  ifelse(is.na(x) | !x %in% lang_levs, "NA", x)
-}
 
 round_daytime15 <- function(x) {
   as.integer(format(x, "%H")) + as.integer(format(x, "%M")) %/% 15 * 0.25
@@ -122,36 +71,6 @@ count_list_col <- function(x) {
   o <- lengths(x)
   o[o == 1][dapr::vap_lgl(x[o == 1], is.na)] <- 0L
   o
-}
-
-strip_twimg_url <- function(x) {
-  if (any(grepl("http://pbs.twimg.com/", x, fixed = TRUE))) {
-    x <-    sub("http://pbs.twimg.com/", "", x, fixed = TRUE)
-  }
-  if (any(grepl("http://abs.twimg.com/", x, fixed = TRUE))) {
-    x <-    sub("http://abs.twimg.com/", "", x, fixed = TRUE)
-  }
-  if (any(grepl("https://pbs.twimg.com/", x, fixed = TRUE))) {
-    x <- sub(   "https://pbs.twimg.com/", "", x, fixed = TRUE)
-  }
-  if (any(grepl("https://abs.twimg.com/", x, fixed = TRUE))) {
-    x <-    sub("https://abs.twimg.com/", "", x, fixed = TRUE)
-  }
-  x
-}
-
-
-is_list_id <- function(x, ...) {
-  if (isTRUE(attr(x, "is_list_id"))) {
-    return(TRUE)
-  }
-  if (isFALSE(attr(x, "is_list_id"))) {
-    return(TRUE)
-  }
-  all(grepl("^\\d+$", x)) &&
-    any(dapr::vap_lgl(
-      utils::head(x, 3), ~ NROW(rtweet::lists_statuses(.x)) > 0L
-    ))
 }
 
 sampleit <- function(x, n) {
