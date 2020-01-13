@@ -22,7 +22,9 @@ Imports:
     data.table,
     wactor,
     stats,
-    xgboost
+    xgboost,
+    crayon,
+    progress
 RoxygenNote: 7.0.2
 Suggests: 
     testthat (>= 2.1.0)

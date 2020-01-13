@@ -5,3 +5,5 @@
 ^\.httr-oauth$
 ^LICENSE\.md$
 ^working\.R$
+^\.travis\.yml$
+^tweetbotornot2\.Rproj$

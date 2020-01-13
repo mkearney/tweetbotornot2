@@ -4,11 +4,25 @@
 \alias{predict_bot}
 \title{Predict Twitter bots}
 \usage{
-predict_bot(x)
+predict_bot(x, batch_size = 100, ...)
 }
 \arguments{
 \item{x}{Input data either character vector of Twitter identifiers (user IDs
 or screen names) or a data frame of Twitter data}
+
+\item{batch_size}{Number of users to process per batch. Relevant if x contains user
+names or timeline data for more than 100 Twitter users. Because the data
+processing involves user-level aggregation (grouping by user), it can create
+computational bottlenecks that are easily avoided by breaking the data into
+batches of users. Manipulating this number may speed up or slow down data
+processing, but for most jobs the speed difference is likely negligible,
+meaning this argument may only be useful if you are working on either a very
+slow/low-memory machine or very fast/high-memory machine. Default is 100.}
+
+\item{...}{Other arguments are passed on to rtweet functions. This is mostly
+just to allow users to specify the Twitter API token, e.g.,
+\code{predict_bot("kearneymw", token = token)} or
+\code{predict_bot("kearneymw", token = rtweet::bearer_token())}.}
 }
 \value{
 A data frame with the user id, screen name, and estimated probability

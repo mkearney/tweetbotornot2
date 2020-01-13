@@ -2,9 +2,7 @@
 #'
 #' Explain estimated probability that one or more Twitter accounts is a "bot"
 #'
-#' @param x Input data either character vector of Twitter identifiers (user IDs
-#'   or screen names), data frame of Twitter data, or predictions returned by
-#'   explain_bot
+#' @inheritParams predict_bot
 #' @return A data frame with the user id, screen name, probability estimate,
 #'   feature name, and feature contribution
 #' @examples
@@ -25,32 +23,41 @@
 #'  ]
 #' }
 #' @export
-explain_bot <- function(x) {
+explain_bot <- function(x, batch_size = 100, ...) {
   UseMethod("explain_bot")
 }
 
 #' @export
-explain_bot.character <- function(x) {
-  x <- predict_bot(x)
+explain_bot.character <- function(x, batch_size = 100, ...) {
+  x <- predict_bot(x, batch_size = batch_size, ...)
   explain_bot(x)
 }
 
 #' @export
-explain_bot.data.frame <- function(x) {
+explain_bot.factor <- function(x, batch_size = 100, ...) {
+  x <- as.character(x)
+  explain_bot(x, batch_size = batch_size, ...)
+}
+
+#' @export
+explain_bot.data.frame <- function(x, batch_size = 100, ...) {
   x <- data.table::data.table(x)
-  explain_bot(x)
+  explain_bot(x, batch_size = batch_size, ...)
 }
 
 
 #' @export
-explain_bot.data.table <- function(x) {
+explain_bot.data.table <- function(x, batch_size = 100, ...) {
   . <- NULL
   user_id <- NULL
   screen_name <- NULL
   bot <- NULL
+  prob_bot <- NULL
   value <- NULL
+  feature_description <- NULL
+  feature <- NULL
   if (!"prob_bot" %in% names(x)) {
-    x <- predict_bot(x)
+    x <- predict_bot(x, batch_size = batch_size, ...)
   }
   p <- x[, prob_bot]
   x <- get_model_data(x)

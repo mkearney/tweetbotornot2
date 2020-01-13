@@ -19,6 +19,7 @@ library(tweetbotornot2)
 # tweetbotornot2
 
 <!-- badges: start -->
+[![Travis build status](https://travis-ci.org/mkearney/tweetbotornot2.svg?branch=master)](https://travis-ci.org/mkearney/tweetbotornot2)
 <!-- badges: end -->
 
 {tweetbotornot2} provides an out-of-the-box classifier for detecting Twitter bots that 

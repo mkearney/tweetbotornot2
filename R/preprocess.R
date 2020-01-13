@@ -3,25 +3,45 @@
 #'
 #' Prepares data for Twitter bot model
 #'
-#' @param x Input either a user identifier or Twitter data
+#' @inheritParams predict_bot
 #' @return Returns a data frame used to generate predictions
 #' @export
-preprocess_bot <- function(x, batch_size = 100) UseMethod("preprocess_bot")
+preprocess_bot <- function(x, batch_size = 100, ...) UseMethod("preprocess_bot")
 
 #' @export
-preprocess_bot.character <- function(x, batch_size = 100) {
-  x <- rtweet::get_timelines(x, n = 200, check = FALSE)
+preprocess_bot.character <- function(x, batch_size = 100, ...) {
+  x <- rtweet::get_timelines(x, n = 200, check = FALSE, ...)
   preprocess_bot(x, batch_size = batch_size)
 }
 
 #' @export
-preprocess_bot.data.frame <- function(x, batch_size = 100) {
+preprocess_bot.factor <- function(x, batch_size = 100, ...) {
+  x <- as.character(x)
+  preprocess_bot(x, batch_size = batch_size, ...)
+}
+
+#' @export
+preprocess_bot.data.frame <- function(x, batch_size = 100, ...) {
   x <- data.table::data.table(x)
-  preprocess_bot(x, batch_size = batch_size)
+  preprocess_bot(x, batch_size = batch_size, ...)
 }
 
+
+
+
 #' @export
-preprocess_bot.data.table <- function(x, batch_size = 100) {
+preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
+  user_id <- NULL
+  if (all(
+    tweetbotornot_xgb_model$feature_names %in% names(x)
+  )) {
+    return(x)
+  }
+  if (any(c("user_id", "screen_name", "id_str") %in% names(x)) &&
+      all(!c("text", "friends_count") %in% names(x))) {
+    x <- pluck_users(x)
+    return(preprocess_bot(x, ...))
+  }
   ## (wrangling with none or non-intensive grouping)
   x <- preprocess_bot_init(x)
 
@@ -62,6 +82,7 @@ preprocess_bot_init <- function(x) {
   ##                           (FOR CRAN CHECKS)                              ##
   ##--------------------------------------------------------------------------##
   text <- NULL
+  display_text_width <- NULL
   reply_to_status_id <- NULL
   mentions_user_id <- NULL
   hashtags <- NULL
@@ -88,7 +109,8 @@ preprocess_bot_init <- function(x) {
 
   if (!all(req_cols %in% names(x))) {
     .req_cols <- req_cols[!req_cols %in% names(x)]
-    stop("Missing the following variables:", paste(.req_cols, collapse = ", "))
+    stop("Missing the following variables: ",
+      paste(.req_cols, collapse = ", "), call. = FALSE)
   }
 
   data <- data.table::copy(x[order(ffactor(user_id), -created_at), ])
@@ -122,7 +144,7 @@ preprocess_bot_init <- function(x) {
     usr_actyr := in_years(Sys.time(), account_created_at),
     by = user_id]
   if (!"bot" %in% names(data)) {
-    data[, bot := FALSE]
+    data[, bot := NA]
   }
   data
 }
@@ -245,7 +267,8 @@ preprocess_bot_group <- function(data) {
 }
 
 model.matrix_ <- function(x) {
-  f <- stats::as.formula(~ ., parent.frame())
+  f <- paste("~", paste(names(x), collapse = " + "))
+  f <- stats::as.formula(f, environment())
   x <- data.table::as.data.table(stats::model.matrix.default(f, data = x))
   x[, -1]
 }

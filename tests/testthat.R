@@ -1,4 +1,4 @@
 library(testthat)
-library(twitterbots)
+library(tweetbotornot2)
 
-test_check("twitterbots")
+test_check("tweetbotornot2")

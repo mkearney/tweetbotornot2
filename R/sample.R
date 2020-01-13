@@ -89,6 +89,12 @@ sample_via_twitter_lists.character <- function(x, n = 100, regex = NULL, ...) {
   if (NROW(x) == 0) {
     return(x)
   }
+  . <- NULL
+  member_count <- NULL
+  slug <- NULL
+  name <- NULL
+  list_id <- NULL
+
   x <- x[, .(name = name[1], slug = slug[1], member_count = member_count[1], n = .N),
     by = list_id][order(-n), ]
   if (!is.null(regex)) {
@@ -123,6 +129,7 @@ sample_via_twitter_lists.data.table <- function(x, n = 100, regex, ...) {
   }
   l <- vector("list", nrow(x))
   if ("list_id" %in% names(x)) {
+    list_id <- NULL
     x <- x[, list_id]
     for (i in seq_along(l)) {
       l[[i]] <- data.table::data.table(
@@ -158,6 +165,17 @@ sample_via_twitter_lists.data.table <- function(x, n = 100, regex, ...) {
   if ("created_at" %in% names(l) && !"account_created_at" %in% names(l)) {
     names(l)[names(l) == "created_at"] <- "account_created_at"
   }
+  screen_name <- NULL
+  description <- NULL
+  account_created_at <- NULL
+  statuses_count <- NULL
+  friends_count <- NULL
+  favourites_count <- NULL
+  followers_count <- NULL
+  listed_count <- NULL
+  verified <- NULL
+  . <- NULL
+  user_id <- NULL
   l <- l[, .(screen_name = screen_name[1],
     description = description[1],
     account_created_at = account_created_at[1],
@@ -202,90 +220,90 @@ tweetbotornot_lookup_users <- function(x, ...) {
   data.table::data.table(x)
 }
 
-bot <- function(x) UseMethod("bot")
+# bot <- function(x) UseMethod("bot")
+#
+# bot.character <- function(x) {
+#   x <- tweetbotornot_lookup_users(x)
+#   bot(x)
+# }
+#
+# bot.data.frame <- function(x) {
+#   x <- data.table::as.data.table(x)
+#   bot(x)
+# }
+#
+# as_dt <- function(x) {
+#   `class<-`(x, c("data.table", "data.frame"))
+# }
+#
+# bot.bot <- function(x) x
+#
+# bot.data.table <- function(x) {
+#   if (!"bot" %in% names(x)) {
+#     x[, bot := rep(NA, nrow(x))]
+#   }
+#   structure(
+#     .Data = x,
+#     .model = list(),
+#     .N = nrow(x),
+#     .features = ncol(x),
+#     .bots = x[, sum(bot, na.rm = TRUE)],
+#     .nots = x[, sum(!bot, na.rm = TRUE)],
+#     class = "bot"
+#   )
+# }
+# count_users <- function(x) attr(x, ".N")
+# count_features <- function(x) attr(x, ".features")
 
-bot.character <- function(x) {
-  x <- tweetbotornot_lookup_users(x)
-  bot(x)
-}
-
-bot.data.frame <- function(x) {
-  x <- data.table::as.data.table(x)
-  bot(x)
-}
-
-as_dt <- function(x) {
-  `class<-`(x, c("data.table", "data.frame"))
-}
-
-bot.bot <- function(x) x
-
-bot.data.table <- function(x) {
-  if (!"bot" %in% names(x)) {
-    x[, bot := rep(NA, nrow(x))]
-  }
-  structure(
-    .Data = x,
-    .model = list(),
-    .N = nrow(x),
-    .features = ncol(x),
-    .bots = x[, sum(bot, na.rm = TRUE)],
-    .nots = x[, sum(!bot, na.rm = TRUE)],
-    class = "bot"
-  )
-}
-count_users <- function(x) attr(x, ".N")
-count_features <- function(x) attr(x, ".features")
-
-bot.default <- function(x) {
-  if (missing(x) || length(x) == 0) {
-    x <- data.table::data.table()
-    return(bot(x))
-  }
-  stop("bot expects a data table or character vector")
-}
-
-count_bots <- function(x) {
-  attr(x, ".bots")
-}
-count_nots <- function(x) {
-  attr(x, ".nots")
-}
-print.bot <- function(x) {
-  cat(format(x), fill = TRUE)
-  d <- as_dt(x)
-  if (all(c("user_id", "screen_name", "bot") %in% names(d))) {
-    cols <- c("user_id", "screen_name", "bot", "prob_bot",
-      "statuses_count", "friends_count", "followers_count",
-      "usr_twtrt", "usr_frnds", "usr_fflws")
-    cols <- cols[cols %in% names(d)]
-    d <- d[, ..cols]
-    d[, `. . .` := '. . .']
-  }
-  print(d)
-}
-format.bot <- function(x) {
-  gray <- crayon::make_style("#888888")
-  cat(gray(paste0("# A tweetbotornot2: ", count_users(x), " (users) x ",
-    count_features(x), " (features)")))
-}
+# bot.default <- function(x) {
+#   if (missing(x) || length(x) == 0) {
+#     x <- data.table::data.table()
+#     return(bot(x))
+#   }
+#   stop("bot expects a data table or character vector")
+# }
+#
+# count_bots <- function(x) {
+#   attr(x, ".bots")
+# }
+# count_nots <- function(x) {
+#   attr(x, ".nots")
+# }
+# print.bot <- function(x) {
+#   cat(format(x), fill = TRUE)
+#   d <- as_dt(x)
+#   if (all(c("user_id", "screen_name", "bot") %in% names(d))) {
+#     cols <- c("user_id", "screen_name", "bot", "prob_bot",
+#       "statuses_count", "friends_count", "followers_count",
+#       "usr_twtrt", "usr_frnds", "usr_fflws")
+#     cols <- cols[cols %in% names(d)]
+#     d <- d[, ..cols]
+#     d[, `. . .` := '. . .']
+#   }
+#   print(d)
+# }
+# format.bot <- function(x) {
+#   gray <- crayon::make_style("#888888")
+#   cat(gray(paste0("# A tweetbotornot2: ", count_users(x), " (users) x ",
+#     count_features(x), " (features)")))
+# }
 
 
 
-sample_via_twitter_lists_lists <- function(users, regex, ...) {
-  slug <- NULL
-  name <- NULL
-  list_id <- NULL
-  lu <- user_lists(x, ...)
-  lu <- lu[(grepl(regex, slug, ignore.case = TRUE) |
-      grepl(regex, name, ignore.case = TRUE)) &
-      !duplicated(list_id), ]
-  ul <- tweetbotornot_collect(lu, ...)
-  ul[["list_path"]] <- sub("^/", "", lu[["uri"]])[match(ul$list_id, lu$list_id)]
-  ul[["list_owner_user"]] <- sub("/.*", "", ul[["list_path"]])
-  ul[["list_slug"]] <- sub(".*/", "", ul[["list_path"]])
-  ul
-}
+# sample_via_twitter_lists_lists <- function(users, regex, ...) {
+#   slug <- NULL
+#   name <- NULL
+#   list_id <- NULL
+#   lu <- user_lists(users, ...)
+#   lu <- lu[(grepl(regex, slug, ignore.case = TRUE) |
+#       grepl(regex, name, ignore.case = TRUE)) &
+#       !duplicated(list_id), ]
+#   ul <- tweetbotornot_collect(lu, ...)
+#   ul[["list_path"]] <- sub("^/", "", lu[["uri"]])[match(ul$list_id, lu$list_id)]
+#   ul[["list_owner_user"]] <- sub("/.*", "", ul[["list_path"]])
+#   ul[["list_slug"]] <- sub(".*/", "", ul[["list_path"]])
+#   ul
+# }
 
 user_lists <- function(user, n = 1000, ...) {
   its <- ceiling(n / 200)

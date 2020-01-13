@@ -226,3 +226,19 @@ is_user <- function(x) {
 is_ids <- function(x) {
   is.character(x) && all(grepl("^\\d+$", x))
 }
+
+
+pluck_users <- function(x) {
+  if (!any(
+    c("user_id", "screen_name") %in% names(x)
+  ) &&
+      "id_str" %in% names(x)) {
+    return(x[["id_str"]])
+  }
+  var <- sort(grep("^(user_id|screen_name)$", names(x), value = TRUE), decreasing = TRUE)[1]
+  x[[var]]
+}
+
+get_model_data <- function(x) attr(x, "model_data")
+
+is_null <- is.null
