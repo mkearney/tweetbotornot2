@@ -135,12 +135,12 @@ The most influential features in the classifier
 ```{r, include=FALSE, eval=FALSE}
 # idsbot <- c("user_id", "screen_name", "bot")
 # xgboost::xgb.ggplot.importance(xgboost::xgb.importance(
-#   model = tweetbotornot_xgb_model,
+#   model = tweetbotornot2:::tweetbotornot_xgb_model,
 #   trees = 1:1000), measure = "Gain", top_n = 28) +
 #   ggplot2::scale_fill_viridis_d(begin= 0.05, end = 0.9) +
 #   dataviz::theme_mwk(12, "Avenir Next LT Pro") +
-#   ggplot2::coord_cartesian(ylim = c(0, 0.3)) +
-#   ggplot2::coord_flip(ylim = c(0, .12)) + 
+#   #ggplot2::coord_cartesian(ylim = c(0, 0.3)) +
+#   #ggplot2::coord_flip(ylim = c(0, .12)) +
 #   ggplot2::ggsave("man/figures/README-import.png", width = 9, height = 8,
 #     units = "in", dpi = 312)
 ```
@@ -153,7 +153,6 @@ How features contributed to predictions in the original training data:
 
 ```{r, include=FALSE, eval=FALSE}
 # .d <- tfse::read_RDS("../twbt/data-final-munged.rds")
-# .d <- .d[screen_name != "DavidGuzzy", ]
 # 
 # png("man/figures/README-shap.png", width = 9, height = 8, units = "in", res = 312)
 # par(tcl = -0.175, bty = "n", xaxt = "s", yaxt = "s", col = "#aaaaaa")
