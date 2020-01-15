@@ -30,3 +30,21 @@ Returns a data frame used to generate predictions
 \description{
 Prepares data for Twitter bot model
 }
+\examples{
+
+\dontrun{
+
+#' ## vector of screen names
+x <- c("netflix_bot", "aasfdiouyasdoifu", "madeupusernamethatiswrong",
+  "a_quilt_bot", "jack", "SHAQ", "aasfdiouyasdoifu5", NA_character_,
+  "madeupusernamethatiswrong", "a_quilt_bot")
+
+## preprocess_bot - returns features data.table
+ftrs <- preprocess_bot(x)
+
+## use features to generate predictions
+predict_bot(ftrs)
+
+}
+
+}

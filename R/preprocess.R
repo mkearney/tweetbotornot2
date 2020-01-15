@@ -5,12 +5,35 @@
 #'
 #' @inheritParams predict_bot
 #' @return Returns a data frame used to generate predictions
+#' @examples
+#'
+#' \dontrun{
+#'
+#' #' ## vector of screen names
+#' x <- c("netflix_bot", "aasfdiouyasdoifu", "madeupusernamethatiswrong",
+#'   "a_quilt_bot", "jack", "SHAQ", "aasfdiouyasdoifu5", NA_character_,
+#'   "madeupusernamethatiswrong", "a_quilt_bot")
+#'
+#' ## preprocess_bot - returns features data.table
+#' ftrs <- preprocess_bot(x)
+#'
+#' ## use features to generate predictions
+#' predict_bot(ftrs)
+#'
+#' }
+#'
 #' @export
 preprocess_bot <- function(x, batch_size = 100, ...) UseMethod("preprocess_bot")
 
 #' @export
 preprocess_bot.character <- function(x, batch_size = 100, ...) {
-  x <- rtweet::get_timelines(x, n = 200, check = FALSE, ...)
+  x <- unique(x[!is.na(x)])
+  ogusrs <- x
+  x <- suppressWarnings(
+    rtweet::get_timelines(x, n = 200, check = FALSE, ...)
+  )
+  x <- data.table::as.data.table(x)
+  attr(x, ".ogusrs") <- ogusrs
   preprocess_bot(x, batch_size = batch_size)
 }
 
@@ -22,11 +45,15 @@ preprocess_bot.factor <- function(x, batch_size = 100, ...) {
 
 #' @export
 preprocess_bot.data.frame <- function(x, batch_size = 100, ...) {
-  x <- data.table::data.table(x)
+  if (".ogusrs" %in% names(attributes(x))) {
+    ogusrs <- attr(x, ".ogusrs")
+    x <- data.table::data.table(x)
+    attr(x, ".ogusrs") <- ogusrs
+  } else {
+    x <- data.table::data.table(x)
+  }
   preprocess_bot(x, batch_size = batch_size, ...)
 }
-
-
 
 
 #' @export
@@ -42,13 +69,18 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
     x <- pluck_users(x)
     return(preprocess_bot(x, ...))
   }
-  ## (wrangling with none or non-intensive grouping)
-  x <- preprocess_bot_init(x)
-
+  if (".ogusrs" %in% names(attributes(x))) {
+    ogusrs <- attr(x, ".ogusrs")
+  } else {
+    ogusrs <- unique(x$user_id[!is.na(x$user_id)])
+  }
   ## if no batches, process and return
+  x <- preprocess_bot_init(x)
   uid <- unique(x[, user_id])
   if (is.null(batch_size) || isFALSE(batch_size) || length(uid) < batch_size) {
-    return(preprocess_bot_group(x))
+    x <- preprocess_bot_group(x)
+    attr(x, ".ogusrs") <- ogusrs
+    return(x)
   }
 
   ## split data by user
@@ -73,11 +105,19 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
     return(preprocess_bot_group(.x))
   })
 
-  ## bind into data frame and return
-  do.call("rbind", x)
+  ## bind into data frame
+  x <- do.call("rbind", x)
+
+  ## put original users info back
+  attr(x, ".ogusrs") <- ogusrs
+
+  ## return
+  x
 }
 
 preprocess_bot_init <- function(x) {
+  ogusrs <- attr(x, ".ogusrs")
+
   ##--------------------------------------------------------------------------##
   ##                           (FOR CRAN CHECKS)                              ##
   ##--------------------------------------------------------------------------##
@@ -146,6 +186,8 @@ preprocess_bot_init <- function(x) {
   if (!"bot" %in% names(data)) {
     data[, bot := NA]
   }
+  ## add original users back
+  attr(data, ".ogusrs") <- ogusrs
   data
 }
 

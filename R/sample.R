@@ -39,7 +39,11 @@ tweetbotornot_search_users <- function(keywords = c("bot", "automated", "twitter
 }
 
 tweetbotornot_get_timelines <- function(x, ...) {
-  data.table::data.table(rtweet::get_timelines(x, n = 200, check = FALSE, ...))
+  data.table::data.table(
+    suppressWarnings(
+      rtweet::get_timelines(x, n = 200, check = FALSE, ...)
+    )
+  )
 }
 
 #' @export

@@ -2,9 +2,12 @@
 % Please edit documentation in R/predict.R
 \name{predict_bot}
 \alias{predict_bot}
+\alias{predict_bot_score}
 \title{Predict Twitter bots}
 \usage{
 predict_bot(x, batch_size = 100, ...)
+
+predict_bot_score(x, batch_size = 100, ...)
 }
 \arguments{
 \item{x}{Input data either character vector of Twitter identifiers (user IDs
@@ -25,9 +28,32 @@ just to allow users to specify the Twitter API token, e.g.,
 \code{predict_bot("kearneymw", token = rtweet::bearer_token())}.}
 }
 \value{
-A data frame with the user id, screen name, and estimated probability
-of being a bot
+predict_bot: A data frame (data.table) with the user id, screen name,
+and estimated probability of being a bot
+
+predict_bot_score: returns a numeric vector of bot probabilities
 }
 \description{
 Estimate probability that one or more Twitter accounts is a "bot"
+
+Returns numeric vector of bot probabilities matched to the input vector (or
+data frame with user_id or screen_name) of users. This differs from
+\code{predict_bot()} because it only returns the bot probabilities and not
+user ID/screen name information.
+}
+\examples{
+
+\dontrun{
+## vector of screen names
+x <- c("netflix_bot", "aasfdiouyasdoifu", "madeupusernamethatiswrong",
+  "a_quilt_bot", "jack", "SHAQ", "aasfdiouyasdoifu5", NA_character_,
+  "madeupusernamethatiswrong", "a_quilt_bot")
+
+## predict_bot - returns data.table (with user_id, screen_name, prob_bot)
+(p1 <- predict_bot(x))
+
+## predict_bot_score - returns scores (prob_bot as a numeric vector)
+(p2 <- predict_bot_score(x))
+
+}
 }

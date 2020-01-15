@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 options(width = 90, digits = 5, scipen = 6,
-  datatable.print.topn = 5, datatable.print.nrows = 30)
+  datatable.print.topn = 5, datatable.print.nrows = 50)
 library(tweetbotornot2)
 ```
 
@@ -83,11 +83,13 @@ predict_bot(twtdat)[order(-prob_bot), ]
 
 ### Use `explain_bot()` to see the contributions made by each feature in the model
 
-Examine prediction contributions for features in the model
+View prediction contributions from top five features (for each user) in the model
 
 ```{r}
 ## view top features in predictions of each user
-explain_bot(twtdat)[feature %in% feature[1:10], .SD, on = "feature"][1:30, -1]
+explain_bot(twtdat)[order(screen_name, 
+  -abs(value)), ][feature %in% feature[1:5], 
+    .SD, on = "feature"][1:50, -1]
 ```
 
 

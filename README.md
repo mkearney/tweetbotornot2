@@ -42,11 +42,11 @@ bot.
 ``` r
 ## pass screen names to predict function
 predict_bot(c("MagicRealismBot", "netflix_bot", "rdpeng", "hspter"))
-#>       user_id     screen_name   prob_bot
-#> 1: 1203840834     netflix_bot 0.99986231
-#> 2:   24228154          hspter 0.00016590
-#> 3: 3701125272 MagicRealismBot 0.99996889
-#> 4:    9308212          rdpeng 0.00042064
+#>       user_id     screen_name prob_bot
+#> 1: 3701125272 MagicRealismBot 0.978815
+#> 2: 1203840834     netflix_bot 0.977786
+#> 3:    9308212          rdpeng 0.027967
+#> 4:   24228154          hspter 0.023208
 ```
 
 `predict_bot()` also accepts previously collected Twitter data (e.g.,
@@ -77,65 +77,88 @@ twtdat <- rtweet::get_timelines(
 
 ## view output (order most likely to least like bot)
 predict_bot(twtdat)[order(-prob_bot), ]
-#>                 user_id     screen_name     prob_bot
-#>  1:  935569091678691328 tidyversetweets 0.9999926090
-#>  2:  780707721209188352     newstarsbot 0.9999874830
-#>  3:  829792389925597184 American__Voter 0.9999735355
-#>  4:          3701125272 MagicRealismBot 0.9999688864
-#>  5:          3325527710   thinkpiecebot 0.9999618530
-#>  6:           214244836     mitchhedbot 0.9998689890
-#>  7: 1075011651366199297       rstats4ds 0.9998586178
-#>  8:          2973406683       kearneymw 0.0312312841
-#>  9:             9308212          rdpeng 0.0004206400
-#> 10:            25073877 realDonaldTrump 0.0002082884
-#> 11:            24228154          hspter 0.0001659000
-#> 12:            16017475   NateSilver538 0.0001259984
-#> 13:            23544596     mindykaling 0.0000552008
-#> 14:           138203134             AOC 0.0000382137
-#> 15:            28406270         kumailn 0.0000097915
+#>                 user_id     screen_name prob_bot
+#>  1:  935569091678691328 tidyversetweets 0.979425
+#>  2:  780707721209188352     newstarsbot 0.979408
+#>  3:  829792389925597184 American__Voter 0.979399
+#>  4:          3325527710   thinkpiecebot 0.979165
+#>  5:          3701125272 MagicRealismBot 0.978815
+#>  6:           214244836     mitchhedbot 0.976384
+#>  7: 1075011651366199297       rstats4ds 0.973493
+#>  8:          2973406683       kearneymw 0.038342
+#>  9:             9308212          rdpeng 0.027967
+#> 10:            25073877 realDonaldTrump 0.023831
+#> 11:            16017475   NateSilver538 0.023347
+#> 12:            23544596     mindykaling 0.023267
+#> 13:            24228154          hspter 0.023208
+#> 14:           138203134             AOC 0.023111
+#> 15:            28406270         kumailn 0.022726
 ```
 
 ## Explain
 
 ### Use `explain_bot()` to see the contributions made by each feature in the model
 
-Examine prediction contributions for features in the model
+View prediction contributions from top five features (for each user) in
+the model
 
 ``` r
 ## view top features in predictions of each user
-explain_bot(twtdat)[feature %in% feature[1:10], .SD, on = "feature"][1:30, -1]
-#>         screen_name    prob_bot   feature      value                feature_description
-#>  1:             AOC 0.000038214 twt_srctw -4.9941258 Tweet source of Twitter (official)
-#>  2:             AOC 0.000038214 twt_srcna -1.0472798            Tweet source of unknown
-#>  3:             AOC 0.000038214 usr_fllws -0.7423525                     User followers
-#>  4:             AOC 0.000038214 twt_quots -0.6206971                   Tweet via quotes
-#>  5:             AOC 0.000038214      BIAS  0.6181790             Intercept (y when x=0)
-#>  6:             AOC 0.000038214 twt_atsmn -0.5708530                     Tweet mentions
-#>  7:             AOC 0.000038214 usr_actyr -0.5174876                   User account age
-#>  8:             AOC 0.000038214 twt_srcts -0.4900279                 Tweet source types
-#>  9:             AOC 0.000038214 twt_rtwts -0.4330552                 Tweet via retweets
-#> 10:             AOC 0.000038214 twt_wdtsd -0.4117078     Tweet display widht variatiojn
-#> 11: American__Voter 0.999973536 twt_srctw  5.2209139 Tweet source of Twitter (official)
-#> 12: American__Voter 0.999973536 usr_actyr  1.2841703                   User account age
-#> 13: American__Voter 0.999973536 twt_srcna  1.1032038            Tweet source of unknown
-#> 14: American__Voter 0.999973536      BIAS  0.6181790             Intercept (y when x=0)
-#> 15: American__Voter 0.999973536 twt_atsmn  0.3782851                     Tweet mentions
-#> 16: American__Voter 0.999973536 twt_wdtsd  0.3500980     Tweet display widht variatiojn
-#> 17: American__Voter 0.999973536 twt_rtwts  0.3150270                 Tweet via retweets
-#> 18: American__Voter 0.999973536 twt_srcts -0.2297356                 Tweet source types
-#> 19: American__Voter 0.999973536 twt_quots  0.0765267                   Tweet via quotes
-#> 20: American__Voter 0.999973536 usr_fllws  0.0046947                     User followers
-#> 21: MagicRealismBot 0.999968886 twt_srctw  5.2880497 Tweet source of Twitter (official)
-#> 22: MagicRealismBot 0.999968886 usr_actyr  1.3091636                   User account age
-#> 23: MagicRealismBot 0.999968886 twt_srcna  1.0801283            Tweet source of unknown
-#> 24: MagicRealismBot 0.999968886      BIAS  0.6181790             Intercept (y when x=0)
-#> 25: MagicRealismBot 0.999968886 usr_fllws -0.5370702                     User followers
-#> 26: MagicRealismBot 0.999968886 twt_atsmn  0.3796347                     Tweet mentions
-#> 27: MagicRealismBot 0.999968886 twt_rtwts  0.3240635                 Tweet via retweets
-#> 28: MagicRealismBot 0.999968886 twt_wdtsd  0.2360608     Tweet display widht variatiojn
-#> 29: MagicRealismBot 0.999968886 twt_srcts -0.2314501                 Tweet source types
-#> 30: MagicRealismBot 0.999968886 twt_quots  0.0731127                   Tweet via quotes
-#>         screen_name    prob_bot   feature      value                feature_description
+explain_bot(twtdat)[order(screen_name, 
+  -abs(value)), ][feature %in% feature[1:5], 
+    .SD, on = "feature"][1:50, -1]
+#>         screen_name prob_bot   feature     value                feature_description
+#>  1:             AOC 0.023111 twt_srctw -1.831488 Tweet source of Twitter (official)
+#>  2:             AOC 0.023111 twt_rtwts -0.539893                 Tweet via retweets
+#>  3:             AOC 0.023111 twt_atssd -0.324936           Tweet mentions variation
+#>  4:             AOC 0.023111 twt_srcna -0.254608            Tweet source of unknown
+#>  5:             AOC 0.023111 usr_actyr -0.172433                   User account age
+#>  6: American__Voter 0.979399 twt_srctw  1.681257 Tweet source of Twitter (official)
+#>  7: American__Voter 0.979399 twt_srcna  0.561619            Tweet source of unknown
+#>  8: American__Voter 0.979399 twt_rtwts  0.441444                 Tweet via retweets
+#>  9: American__Voter 0.979399 twt_atssd  0.239626           Tweet mentions variation
+#> 10: American__Voter 0.979399 usr_actyr  0.234932                   User account age
+#> 11: MagicRealismBot 0.978815 twt_srctw  1.685349 Tweet source of Twitter (official)
+#> 12: MagicRealismBot 0.978815 twt_srcna  0.561748            Tweet source of unknown
+#> 13: MagicRealismBot 0.978815 twt_rtwts  0.448249                 Tweet via retweets
+#> 14: MagicRealismBot 0.978815 twt_atssd  0.243701           Tweet mentions variation
+#> 15: MagicRealismBot 0.978815 usr_actyr  0.226622                   User account age
+#> 16:   NateSilver538 0.023347 twt_srctw -1.834118 Tweet source of Twitter (official)
+#> 17:   NateSilver538 0.023347 twt_rtwts -0.469894                 Tweet via retweets
+#> 18:   NateSilver538 0.023347 twt_atssd -0.293773           Tweet mentions variation
+#> 19:   NateSilver538 0.023347 twt_srcna -0.250782            Tweet source of unknown
+#> 20:   NateSilver538 0.023347 usr_actyr -0.191896                   User account age
+#> 21:          hspter 0.023208 twt_srctw -1.832319 Tweet source of Twitter (official)
+#> 22:          hspter 0.023208 twt_rtwts -0.501973                 Tweet via retweets
+#> 23:          hspter 0.023208 twt_atssd -0.309958           Tweet mentions variation
+#> 24:          hspter 0.023208 twt_srcna -0.250760            Tweet source of unknown
+#> 25:          hspter 0.023208 usr_actyr -0.198293                   User account age
+#> 26:       kearneymw 0.038342 twt_srctw -1.820548 Tweet source of Twitter (official)
+#> 27:       kearneymw 0.038342 twt_rtwts -0.530647                 Tweet via retweets
+#> 28:       kearneymw 0.038342 twt_atssd -0.351602           Tweet mentions variation
+#> 29:       kearneymw 0.038342 usr_actyr  0.282148                   User account age
+#> 30:       kearneymw 0.038342 twt_srcna -0.127432            Tweet source of unknown
+#> 31:         kumailn 0.022726 twt_srctw -1.824041 Tweet source of Twitter (official)
+#> 32:         kumailn 0.022726 twt_rtwts -0.414877                 Tweet via retweets
+#> 33:         kumailn 0.022726 twt_atssd -0.261961           Tweet mentions variation
+#> 34:         kumailn 0.022726 twt_srcna -0.239313            Tweet source of unknown
+#> 35:         kumailn 0.022726 usr_actyr -0.205849                   User account age
+#> 36:     mindykaling 0.023267 twt_srctw -1.830300 Tweet source of Twitter (official)
+#> 37:     mindykaling 0.023267 twt_rtwts -0.486875                 Tweet via retweets
+#> 38:     mindykaling 0.023267 twt_atssd -0.295756           Tweet mentions variation
+#> 39:     mindykaling 0.023267 twt_srcna -0.256115            Tweet source of unknown
+#> 40:     mindykaling 0.023267 usr_actyr -0.198728                   User account age
+#> 41:     mitchhedbot 0.976384 twt_srctw  1.812172 Tweet source of Twitter (official)
+#> 42:     mitchhedbot 0.976384 twt_srcna  0.575856            Tweet source of unknown
+#> 43:     mitchhedbot 0.976384 twt_rtwts  0.478810                 Tweet via retweets
+#> 44:     mitchhedbot 0.976384 twt_atssd  0.269606           Tweet mentions variation
+#> 45:     mitchhedbot 0.976384 usr_actyr -0.124591                   User account age
+#> 46:     newstarsbot 0.979408 twt_srctw  1.838576 Tweet source of Twitter (official)
+#> 47:     newstarsbot 0.979408 twt_rtwts  0.489507                 Tweet via retweets
+#> 48:     newstarsbot 0.979408 twt_atssd  0.277128           Tweet mentions variation
+#> 49:     newstarsbot 0.979408 usr_actyr  0.187002                   User account age
+#> 50:     newstarsbot 0.979408 twt_srcna -0.082825            Tweet source of unknown
+#>         screen_name prob_bot   feature     value                feature_description
 ```
 
 ## Update
