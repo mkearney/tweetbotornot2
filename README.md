@@ -81,15 +81,15 @@ predict_bot(twtdat)[order(-prob_bot), ]
 #>  1:  935569091678691328 tidyversetweets 0.979425
 #>  2:  780707721209188352     newstarsbot 0.979408
 #>  3:  829792389925597184 American__Voter 0.979399
-#>  4:          3325527710   thinkpiecebot 0.979317
+#>  4:          3325527710   thinkpiecebot 0.979319
 #>  5:          3701125272 MagicRealismBot 0.978815
 #>  6:           214244836     mitchhedbot 0.976384
-#>  7: 1075011651366199297       rstats4ds 0.973811
+#>  7: 1075011651366199297       rstats4ds 0.973782
 #>  8:          2973406683       kearneymw 0.038251
 #>  9:             9308212          rdpeng 0.027967
 #> 10:            25073877 realDonaldTrump 0.024500
-#> 11:            16017475   NateSilver538 0.023375
-#> 12:            23544596     mindykaling 0.023267
+#> 11:            23544596     mindykaling 0.023267
+#> 12:            16017475   NateSilver538 0.023230
 #> 13:            24228154          hspter 0.023199
 #> 14:           138203134             AOC 0.023105
 #> 15:            28406270         kumailn 0.022726
@@ -108,31 +108,31 @@ explain_bot(twtdat)[order(screen_name,
   -abs(value)), ][feature %in% feature[1:5], 
     .SD, on = "feature"][1:50, -1]
 #>         screen_name prob_bot   feature     value                feature_description
-#>  1:             AOC 0.023105 twt_srctw -1.831519 Tweet source of Twitter (official)
-#>  2:             AOC 0.023105 twt_rtwts -0.538225                 Tweet via retweets
-#>  3:             AOC 0.023105 twt_atssd -0.324403           Tweet mentions variation
-#>  4:             AOC 0.023105 twt_srcna -0.254650            Tweet source of unknown
-#>  5:             AOC 0.023105 usr_actyr -0.175899                   User account age
+#>  1:             AOC 0.023105 twt_srctw -1.831500 Tweet source of Twitter (official)
+#>  2:             AOC 0.023105 twt_rtwts -0.538226                 Tweet via retweets
+#>  3:             AOC 0.023105 twt_atssd -0.324428           Tweet mentions variation
+#>  4:             AOC 0.023105 twt_srcna -0.254872            Tweet source of unknown
+#>  5:             AOC 0.023105 usr_actyr -0.175851                   User account age
 #>  6: American__Voter 0.979399 twt_srctw  1.681257 Tweet source of Twitter (official)
 #>  7: American__Voter 0.979399 twt_srcna  0.561622            Tweet source of unknown
 #>  8: American__Voter 0.979399 twt_rtwts  0.441444                 Tweet via retweets
 #>  9: American__Voter 0.979399 twt_atssd  0.239626           Tweet mentions variation
 #> 10: American__Voter 0.979399 usr_actyr  0.234932                   User account age
 #> 11: MagicRealismBot 0.978815 twt_srctw  1.685465 Tweet source of Twitter (official)
-#> 12: MagicRealismBot 0.978815 twt_srcna  0.561849            Tweet source of unknown
-#> 13: MagicRealismBot 0.978815 twt_rtwts  0.448286                 Tweet via retweets
-#> 14: MagicRealismBot 0.978815 twt_atssd  0.243652           Tweet mentions variation
-#> 15: MagicRealismBot 0.978815 usr_actyr  0.226530                   User account age
-#> 16:   NateSilver538 0.023375 twt_srctw -1.834117 Tweet source of Twitter (official)
-#> 17:   NateSilver538 0.023375 twt_rtwts -0.469634                 Tweet via retweets
-#> 18:   NateSilver538 0.023375 twt_atssd -0.293636           Tweet mentions variation
-#> 19:   NateSilver538 0.023375 twt_srcna -0.251689            Tweet source of unknown
-#> 20:   NateSilver538 0.023375 usr_actyr -0.191579                   User account age
-#> 21:          hspter 0.023199 twt_srctw -1.832066 Tweet source of Twitter (official)
-#> 22:          hspter 0.023199 twt_rtwts -0.502013                 Tweet via retweets
-#> 23:          hspter 0.023199 twt_atssd -0.310072           Tweet mentions variation
-#> 24:          hspter 0.023199 twt_srcna -0.250793            Tweet source of unknown
-#> 25:          hspter 0.023199 usr_actyr -0.197950                   User account age
+#> 12: MagicRealismBot 0.978815 twt_srcna  0.561748            Tweet source of unknown
+#> 13: MagicRealismBot 0.978815 twt_rtwts  0.448261                 Tweet via retweets
+#> 14: MagicRealismBot 0.978815 twt_atssd  0.243587           Tweet mentions variation
+#> 15: MagicRealismBot 0.978815 usr_actyr  0.226540                   User account age
+#> 16:   NateSilver538 0.023230 twt_srctw -1.834010 Tweet source of Twitter (official)
+#> 17:   NateSilver538 0.023230 twt_rtwts -0.469515                 Tweet via retweets
+#> 18:   NateSilver538 0.023230 twt_atssd -0.292804           Tweet mentions variation
+#> 19:   NateSilver538 0.023230 twt_srcna -0.251557            Tweet source of unknown
+#> 20:   NateSilver538 0.023230 usr_actyr -0.191401                   User account age
+#> 21:          hspter 0.023199 twt_srctw -1.832058 Tweet source of Twitter (official)
+#> 22:          hspter 0.023199 twt_rtwts -0.502004                 Tweet via retweets
+#> 23:          hspter 0.023199 twt_atssd -0.310035           Tweet mentions variation
+#> 24:          hspter 0.023199 twt_srcna -0.250750            Tweet source of unknown
+#> 25:          hspter 0.023199 usr_actyr -0.197901                   User account age
 #> 26:       kearneymw 0.038251 twt_srctw -1.821759 Tweet source of Twitter (official)
 #> 27:       kearneymw 0.038251 twt_rtwts -0.530068                 Tweet via retweets
 #> 28:       kearneymw 0.038251 twt_atssd -0.351724           Tweet mentions variation
@@ -212,3 +212,7 @@ The most influential features in the classifier
 How features contributed to predictions in the original training data:
 
 ![](man/figures/README-shap.png)
+
+### [Botometer](https://botometer.iuni.iu.edu) Comparisons
+
+![](man/figures/README-modcomp.png)

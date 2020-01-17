@@ -178,3 +178,6 @@ How features contributed to predictions in the original training data:
 ![](man/figures/README-shap.png)
 
 
+### [Botometer](https://botometer.iuni.iu.edu) Comparisons
+
+![](man/figures/README-modcomp.png)
