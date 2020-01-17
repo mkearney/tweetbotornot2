@@ -77,7 +77,7 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
   ## if no batches, process and return
   x <- preprocess_bot_init(x)
   uid <- unique(x[, user_id])
-  if (is.null(batch_size) || isFALSE(batch_size) || length(uid) < batch_size) {
+  if (is.null(batch_size) || isFALSE(batch_size) || length(uid) <= batch_size) {
     x <- preprocess_bot_group(x)
     attr(x, ".ogusrs") <- ogusrs
     return(x)
