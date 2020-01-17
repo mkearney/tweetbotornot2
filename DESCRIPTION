@@ -24,7 +24,10 @@ Imports:
     stats,
     xgboost,
     crayon,
-    progress
+    progress,
+    RJSONIO,
+    httr,
+    glue
 RoxygenNote: 7.0.2
 Suggests: 
     testthat (>= 2.1.0),

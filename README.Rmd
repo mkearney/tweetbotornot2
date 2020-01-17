@@ -178,6 +178,18 @@ How features contributed to predictions in the original training data:
 ![](man/figures/README-shap.png)
 
 
-### [Botometer](https://botometer.iuni.iu.edu) Comparisons
+## [Botometer](https://botometer.iuni.iu.edu)
+
+### Use `predict_botometer()` to get their automation probability scores
+
+```{r}
+## get botometer scores
+predict_botometer(c('kearneymw', 'netflix_bot'))
+```
+
+
+### Comparison with `{tweetbotornot2}`
+
+Accuracy of tweetbotornot versus botometer across multiple datasets:
 
 ![](man/figures/README-modcomp.png)

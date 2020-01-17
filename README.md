@@ -91,7 +91,7 @@ predict_bot(twtdat)[order(-prob_bot), ]
 #> 11:            23544596     mindykaling 0.023267
 #> 12:            16017475   NateSilver538 0.023230
 #> 13:            24228154          hspter 0.023199
-#> 14:           138203134             AOC 0.023105
+#> 14:           138203134             AOC 0.023083
 #> 15:            28406270         kumailn 0.022726
 ```
 
@@ -108,11 +108,11 @@ explain_bot(twtdat)[order(screen_name,
   -abs(value)), ][feature %in% feature[1:5], 
     .SD, on = "feature"][1:50, -1]
 #>         screen_name prob_bot   feature     value                feature_description
-#>  1:             AOC 0.023105 twt_srctw -1.831500 Tweet source of Twitter (official)
-#>  2:             AOC 0.023105 twt_rtwts -0.538226                 Tweet via retweets
-#>  3:             AOC 0.023105 twt_atssd -0.324428           Tweet mentions variation
-#>  4:             AOC 0.023105 twt_srcna -0.254872            Tweet source of unknown
-#>  5:             AOC 0.023105 usr_actyr -0.175851                   User account age
+#>  1:             AOC 0.023083 twt_srctw -1.831461 Tweet source of Twitter (official)
+#>  2:             AOC 0.023083 twt_rtwts -0.537981                 Tweet via retweets
+#>  3:             AOC 0.023083 twt_atssd -0.324472           Tweet mentions variation
+#>  4:             AOC 0.023083 twt_srcna -0.254933            Tweet source of unknown
+#>  5:             AOC 0.023083 usr_actyr -0.175848                   User account age
 #>  6: American__Voter 0.979399 twt_srctw  1.681257 Tweet source of Twitter (official)
 #>  7: American__Voter 0.979399 twt_srcna  0.561622            Tweet source of unknown
 #>  8: American__Voter 0.979399 twt_rtwts  0.441444                 Tweet via retweets
@@ -123,31 +123,31 @@ explain_bot(twtdat)[order(screen_name,
 #> 13: MagicRealismBot 0.978815 twt_rtwts  0.448261                 Tweet via retweets
 #> 14: MagicRealismBot 0.978815 twt_atssd  0.243587           Tweet mentions variation
 #> 15: MagicRealismBot 0.978815 usr_actyr  0.226540                   User account age
-#> 16:   NateSilver538 0.023230 twt_srctw -1.834010 Tweet source of Twitter (official)
+#> 16:   NateSilver538 0.023230 twt_srctw -1.833996 Tweet source of Twitter (official)
 #> 17:   NateSilver538 0.023230 twt_rtwts -0.469515                 Tweet via retweets
-#> 18:   NateSilver538 0.023230 twt_atssd -0.292804           Tweet mentions variation
-#> 19:   NateSilver538 0.023230 twt_srcna -0.251557            Tweet source of unknown
-#> 20:   NateSilver538 0.023230 usr_actyr -0.191401                   User account age
+#> 18:   NateSilver538 0.023230 twt_atssd -0.292822           Tweet mentions variation
+#> 19:   NateSilver538 0.023230 twt_srcna -0.251556            Tweet source of unknown
+#> 20:   NateSilver538 0.023230 usr_actyr -0.191402                   User account age
 #> 21:          hspter 0.023199 twt_srctw -1.832058 Tweet source of Twitter (official)
 #> 22:          hspter 0.023199 twt_rtwts -0.502004                 Tweet via retweets
 #> 23:          hspter 0.023199 twt_atssd -0.310035           Tweet mentions variation
 #> 24:          hspter 0.023199 twt_srcna -0.250750            Tweet source of unknown
 #> 25:          hspter 0.023199 usr_actyr -0.197901                   User account age
-#> 26:       kearneymw 0.038251 twt_srctw -1.821759 Tweet source of Twitter (official)
-#> 27:       kearneymw 0.038251 twt_rtwts -0.530068                 Tweet via retweets
-#> 28:       kearneymw 0.038251 twt_atssd -0.351724           Tweet mentions variation
-#> 29:       kearneymw 0.038251 usr_actyr  0.282420                   User account age
-#> 30:       kearneymw 0.038251 twt_srcna -0.127894            Tweet source of unknown
+#> 26:       kearneymw 0.038251 twt_srctw -1.821676 Tweet source of Twitter (official)
+#> 27:       kearneymw 0.038251 twt_rtwts -0.530070                 Tweet via retweets
+#> 28:       kearneymw 0.038251 twt_atssd -0.351309           Tweet mentions variation
+#> 29:       kearneymw 0.038251 usr_actyr  0.282569                   User account age
+#> 30:       kearneymw 0.038251 twt_srcna -0.127965            Tweet source of unknown
 #> 31:         kumailn 0.022726 twt_srctw -1.825238 Tweet source of Twitter (official)
 #> 32:         kumailn 0.022726 twt_rtwts -0.414914                 Tweet via retweets
 #> 33:         kumailn 0.022726 twt_atssd -0.262064           Tweet mentions variation
 #> 34:         kumailn 0.022726 twt_srcna -0.239067            Tweet source of unknown
 #> 35:         kumailn 0.022726 usr_actyr -0.206001                   User account age
-#> 36:     mindykaling 0.023267 twt_srctw -1.830311 Tweet source of Twitter (official)
-#> 37:     mindykaling 0.023267 twt_rtwts -0.486859                 Tweet via retweets
+#> 36:     mindykaling 0.023267 twt_srctw -1.830246 Tweet source of Twitter (official)
+#> 37:     mindykaling 0.023267 twt_rtwts -0.486864                 Tweet via retweets
 #> 38:     mindykaling 0.023267 twt_atssd -0.295756           Tweet mentions variation
-#> 39:     mindykaling 0.023267 twt_srcna -0.256142            Tweet source of unknown
-#> 40:     mindykaling 0.023267 usr_actyr -0.198734                   User account age
+#> 39:     mindykaling 0.023267 twt_srcna -0.256129            Tweet source of unknown
+#> 40:     mindykaling 0.023267 usr_actyr -0.198855                   User account age
 #> 41:     mitchhedbot 0.976384 twt_srctw  1.812258 Tweet source of Twitter (official)
 #> 42:     mitchhedbot 0.976384 twt_srcna  0.575901            Tweet source of unknown
 #> 43:     mitchhedbot 0.976384 twt_rtwts  0.479413                 Tweet via retweets
@@ -213,6 +213,22 @@ How features contributed to predictions in the original training data:
 
 ![](man/figures/README-shap.png)
 
-### [Botometer](https://botometer.iuni.iu.edu) Comparisons
+## [Botometer](https://botometer.iuni.iu.edu)
+
+### Use `predict_botometer()` to get their automation probability scores
+
+``` r
+## get botometer scores
+predict_botometer(c('kearneymw', 'netflix_bot'))
+#> @kearneymw (1/2)
+#> @netflix_bot (2/2)
+#>       user_id screen_name botometer
+#> 1: 2973406683   kearneymw  0.045344
+#> 2: 1203840834 netflix_bot  0.706420
+```
+
+### Comparison with `{tweetbotornot2}`
+
+Accuracy of tweetbotornot versus botometer across multiple datasets:
 
 ![](man/figures/README-modcomp.png)
