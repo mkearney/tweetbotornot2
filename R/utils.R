@@ -161,3 +161,22 @@ pluck_users <- function(x) {
 get_model_data <- function(x) attr(x, "model_data")
 
 is_null <- is.null
+
+trim_string_outers <- function(x) {
+  gsub("(^[ \t\r\n]{0,}(\"|')?)|((\"|')[ \t\r\n]{0,}$)", "", x)
+}
+
+cleanup_users_string <- function(x) {
+  ## remove outer white space/quotes
+  x <- trim_string_outers(x)
+
+  ## remove URL information
+  urls <- grepl("^https?://|twitter\\.com/", x)
+  x[urls] <- tfse::regmatches_first(x[urls], "(?<=twitter\\.com/)[^/]+")
+
+  ## remove [at] sign0
+  x <- sub("@", "", x, fixed = TRUE)
+
+  ## return user(s)
+  x
+}

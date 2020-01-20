@@ -1,81 +1,3 @@
-botometer_key <- function(x = NULL, set_key = FALSE) {
-  if (length(x) > 0) {
-    if (set_key &&
-        !any(grepl("botometer", names(Sys.getenv()), ignore.case = TRUE))) {
-      tfse::set_renv(BOTOMETER_KEY = x)
-    }
-    return(x)
-  }
-  ev <- grep("botometer", names(Sys.getenv()), ignore.case = TRUE, value = TRUE)
-  if (length(ev) > 0L) {
-    return(Sys.getenv(ev[1]))
-  }
-  stop(paste0("Must supply a 'Botometer' API key, see: ",
-    "https://rapidapi.com/OSoMe/api/botometer/details"),
-    call. = FALSE)
-}
-
-botometer_score <- function(user, token = NULL, key = NULL, set_key = FALSE) {
-  api <- "https://api.twitter.com/1.1/"
-  if (is.null(token)) {
-    token <- rtweet::get_token()
-  }
-  key <- botometer_key(key, set_key = set_key)
-  if (grepl("^\\d+$", user)) {
-    idtype <- "user_id"
-  } else {
-    idtype <- "screen_name"
-  }
-  ## (1) users/show
-  userdata <- httr::GET(glue::glue("{api}users/show.json?{idtype}={user}"), token)
-  user_id <- httr::content(userdata)[["id_str"]][1]
-  screen_name <- httr::content(userdata)[["screen_name"]][1]
-  if (length(screen_name) == 1 && nchar(screen_name) > 1) {
-    user <- screen_name
-    idtype <- "screen_name"
-  }
-  if (length(user_id) == 0 && grepl("^\\d+$", user)) {
-    user_id <- user
-  }
-  if (length(screen_name) == 0 && !grepl("^\\d+$", user)) {
-    screen_name <- user
-  }
-  if (length(user_id) == 0) {
-    user_id <- NA_character_
-  }
-  if (length(screen_name) == 0) {
-    screen_name <- NA_character_
-  }
-  ## (2) statuses/user_timeline
-  timeline <- httr::GET(
-    glue::glue("{api}statuses/user_timeline.json?{idtype}={user}&count=200"),
-    token)
-  ## (3) search/tweets
-  mentions <- httr::GET(glue::glue("{api}search/tweets.json?q={user}&count=200"),
-    token)
-  body = list(
-    timeline = httr::content(timeline, type="application/json"),
-    mentions = httr::content(mentions, type="application/json"),
-    user     = httr::content(userdata, type="application/json")
-  )
-  body_json = RJSONIO::toJSON(body, auto_unbox = TRUE, pretty = TRUE)
-  score <- tryCatch({
-    httr::content(
-      httr::POST("https://osome-botometer.p.mashape.com/2/check_account",
-        encode = "json",
-        httr::add_headers(`X-Mashape-Key` = key),
-        body = body_json))[["scores"]][["english"]]
-  }, error = function(e) NA_real_)
-  if (length(score) == 0) {
-    score <- NA_real_
-  }
-  # Parse result
-  data.table::data.table(
-    user_id = user_id,
-    screen_name = screen_name,
-    botometer = score
-  )
-}
 
 
 #' Botometer scores
@@ -89,16 +11,252 @@ botometer_score <- function(user, token = NULL, key = NULL, set_key = FALSE) {
 #'   https://rapidapi.com/OSoMe/api/botometer/details
 #' @param set_key Logical indicating whether to set the botometer key as an
 #'   R environment variable for current future sessions (on the same machine).
+#' @param parse Logical indicating whether to parse return information. If TRUE
+#'   (the default) then a data.table is returned.
+#' @param verbose Logical indicating whether to print updates between each call.
+#'   Default is TRUE.
 #' @return A data frame (data.table) of user ID, screen name, and botometer score
 #' @export
-predict_botometer <- function(users, token = NULL, key = NULL, set_key = FALSE) {
-  bo <- vector("list", length(users))
-  for (j in seq_along(bo)) {
-    if (NROW(bo[[j]]) == 0) {
-      bo[[j]] <- botometer_score(users[j], token = token,
-        key = key, set_key = set_key)
-    }
-    cat("@", users[j], " (", j, "/", length(bo), ")\n", sep = "")
+predict_botometer <- function(users, token = NULL, key = NULL, set_key = FALSE, parse = TRUE, verbose = TRUE) {
+  ## check rtweet token
+  if (is.null(token)) {
+    token <- rtweet::get_token()
   }
-  do.call("rbind", bo)
+
+  ## fetch and/or set botometer api key
+  key <- botometer_key(key, set_key = set_key)
+
+  ## clean/format users input
+  users <- cleanup_users_string(users)
+
+  ## preserve order
+  users_og <- users
+
+  ## only lookup non-missing users one time each
+  users <- unique(users[!is.na(users)])
+
+  ## determine user type–(if clearly a mix set to NULL to guess for each one)
+  if (all(grepl("^\\d+$", users))) {
+    user_type <- "user_id"
+  } else if (length(users) > 2L && sum(grepl("^\\d+$", users)) > 1L) {
+    user_type <- NULL
+  } else {
+    user_type <- "screen_name"
+  }
+
+  ## initialize output vector
+  output <- vector("list", length(users))
+
+  for (i in seq_along(output)) {
+    if (NROW(output[[i]]) == 0) {
+      output[[i]] <- botometer_score(
+        user      = users[i],
+        token     = token,
+        key       = key,
+        parse     = parse,
+        user_type = user_type
+      )
+    }
+    ## print status
+    if (verbose) {
+      cat("@", users[i], " (", i, "/", length(output), ")\n", sep = "")
+    }
+  }
+
+  ## if parse then combine into single data frame/table
+  if (parse) {
+    output <- do.call("rbind", output)
+  }
+
+  ## return output
+  output
+}
+
+botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
+  ## base URL for API calls
+  base_url <- "https://api.twitter.com/1.1/"
+
+  ## determine whether screen name or user ID
+  if (is.null(user_type)) {
+    ## determine
+    if (grepl("^\\d+$", user)) {
+      user_type <- "user_id"
+    } else {
+      user_type <- "screen_name"
+    }
+  }
+
+  ## (1) users/show endpoint
+  userdata <- httr::GET(
+    paste0(base_url, "users/show.json?", user_type, "=", user),
+    token
+  )
+  ## store returned user ID/screen name information
+  .u <- httr::content(userdata)[c("id_str", "screen_name")]
+  user_id <- .u[[1]]
+  screen_name <- .u[[2]]
+
+  ## if user info isn't valid, then return (skip the other API calls)
+  if (length(screen_name) == 0) {
+    ## preserve 'user' (input) information
+    if (grepl("^\\d+$", user)) {
+      user_id <- user
+      screen_name <- NA_character_
+    } else {
+      user_id <- NA_character_
+      screen_name <- user
+    }
+    if (parse) {
+      return(data.table::data.table(
+        user_id = user_id,
+        screen_name = screen_name,
+        botometer = NA_real_
+      ))
+    }
+    return(list())
+  }
+
+  ## update 'user' with returned screen name and set 'user_type'
+  user <- screen_name
+  user_type <- "screen_name"
+
+  ## (2) statuses/user_timeline endpoint
+  timeline <- httr::GET(
+    paste0(base_url, "statuses/user_timeline.json?", user_type, "=", user, "&count=200"),
+    token
+  )
+
+  ## (3) search/tweets
+  mentions <- httr::GET(
+    paste0(base_url, "search/tweets.json?q=", user, "&count=200"),
+    token
+  )
+
+  ## use returned objects to create req body
+  body <- RJSONIO::toJSON(list(
+    timeline = httr::content(timeline, type = "application/json"),
+    mentions = httr::content(mentions, type = "application/json"),
+    user     = httr::content(userdata, type = "application/json")
+  ), auto_unbox = TRUE, pretty = TRUE)
+
+  ## send request to botometer API
+  r <- httr::POST(
+    "https://osome-botometer.p.mashape.com/2/check_account",
+    encode = "json",
+    httr::add_headers(`X-Mashape-Key` = key),
+    body = body
+  )
+
+  ## if parse is false, return as is
+  if (!parse) {
+    return(r)
+  }
+
+  ## otherwise extract score and return as data table
+  score <- httr::content(r)[["scores"]][["english"]]
+
+  if (length(score) == 0L) {
+    score <- NA_real_
+  }
+  data.table::data.table(
+    user_id = user_id,
+    screen_name = screen_name,
+    botometer = score
+  )
+}
+
+get_timelines_for_botometer <- function(x, token = NULL) {
+  x <- rtweet::get_timelines(x, n = 200, check = FALSE, token = token, parse = FALSE)
+  nms <- names(x)
+  output <- vector("list", length(x))
+  sp <- getOption("scipen")
+  dg <- getOption("digits")
+  on.exit(options(scipen = sp, digits = dg), add = TRUE)
+  options(scipen = 14, digits = 14)
+  for (i in seq_along(output)) {
+    xi <- x[[i]][[1]]
+    if (NROW(xi) == 0) {
+      output[[i]] <- ""
+    } else {
+      xi <- dapr::lap(seq_len(nrow(xi)), ~ as.list(xi[.x, ]))
+      output[[i]] <- RJSONIO::toJSON(xi, auto_unbox = TRUE, pretty = TRUE)
+    }
+  }
+  names(output) <- nms
+  output
+}
+
+lookup_users_for_botometer <- function(x, token = NULL) {
+  x <- rtweet::lookup_users(x, token = token, parse = FALSE)
+  if (NROW(x) == 0) {
+    return(NULL)
+  }
+  nms <- x[['screen_name']]
+  sp <- getOption("scipen")
+  dg <- getOption("digits")
+  on.exit(options(scipen = sp, digits = dg), add = TRUE)
+  options(scipen = 14, digits = 14)
+  x <- dapr::lap(seq_len(nrow(x)), ~ RJSONIO::toJSON(as.list(x[.x, ]), auto_unbox = TRUE, pretty = TRUE))
+  names(x) <- nms
+  x
+}
+
+
+botometer_key <- function(x = NULL, set_key = FALSE) {
+  ## look for key if not supplied directly
+  x <- x %||% find_botometer_key()
+
+  ## if no key is found, stop with hyperlinked message
+  if (is.null(x)) {
+    stop(paste0("This requires a valid 'Botometer' API key, see: ",
+      "https://rapidapi.com/OSoMe/api/botometer/details for more information"),
+      call. = FALSE)
+  }
+
+  ## validate string basics
+  stopifnot(
+    is.character(x),
+    length(x) == 1L,
+    nchar(x) > 0,
+    grepl("[[:alnum:]]{5,}", x)
+  )
+  ## trim any outer white space or quotations
+  x <- trim_string_outers(x)
+
+  ## if TRUE set key as R environment variable
+  if (set_key) {
+    tfse::set_renv(BOTOMETER_KEY = x)
+  }
+
+  ## return key
+  x
+}
+
+find_botometer_key <- function() {
+  ## (1) look for 'BOTOMETER_KEY' R environment variable
+  is_env <- function(x) x != ""
+  if (is_env(key <- Sys.getenv("BOTOMETER_KEY"))) {
+    return(key)
+  }
+
+  ## (2) look for similarly named (e.g., BOTOMETER or BOTOMETER_PAT)
+  envs <- Sys.getenv()
+  if (any(grepl("^botometer", names(envs), ignore.case = TRUE))) {
+    key <- envs[[grep("^botometer", names(envs), ignore.case = TRUE)[1]]]
+    return(key)
+  }
+
+  ## (3) look for botomer key stored at system level
+  key <- c(
+    system("echo $BOTOMETER_KEY", intern = TRUE),
+    system("echo $BOTOMETER_PAT", intern = TRUE),
+    system("echo $BOTOMETER", intern = TRUE)
+  )
+  if (any(key != "")) {
+    key <- key[key != ""][1]
+    return(key)
+  }
+
+  ## otherwise return NULL
+  NULL
 }

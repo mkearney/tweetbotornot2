@@ -4,7 +4,14 @@
 \alias{predict_botometer}
 \title{Botometer scores}
 \usage{
-predict_botometer(users, token = NULL, key = NULL, set_key = FALSE)
+predict_botometer(
+  users,
+  token = NULL,
+  key = NULL,
+  set_key = FALSE,
+  parse = TRUE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{users}{Vector of user IDs or screen names}
@@ -17,6 +24,12 @@ https://rapidapi.com/OSoMe/api/botometer/details}
 
 \item{set_key}{Logical indicating whether to set the botometer key as an
 R environment variable for current future sessions (on the same machine).}
+
+\item{parse}{Logical indicating whether to parse return information. If TRUE
+(the default) then a data.table is returned.}
+
+\item{verbose}{Logical indicating whether to print updates between each call.
+Default is TRUE.}
 }
 \value{
 A data frame (data.table) of user ID, screen name, and botometer score
