@@ -37,3 +37,13 @@ A data frame (data.table) of user ID, screen name, and botometer score
 \description{
 Get Botometer scores for given user(s)
 }
+\examples{
+
+\dontrun{
+## get botometer scores
+b <- predict_botometer(c("kearneymw", "netflix_bot"))
+
+## get full information returned by botometer (as response objects)
+r <- predict_botometer(c("kearneymw", "netflix_bot"), parse = FALSE)
+}
+}

@@ -16,8 +16,22 @@
 #' @param verbose Logical indicating whether to print updates between each call.
 #'   Default is TRUE.
 #' @return A data frame (data.table) of user ID, screen name, and botometer score
+#' @examples
+#'
+#' \dontrun{
+#' ## get botometer scores
+#' b <- predict_botometer(c("kearneymw", "netflix_bot"))
+#'
+#' ## get full information returned by botometer (as response objects)
+#' r <- predict_botometer(c("kearneymw", "netflix_bot"), parse = FALSE)
+#' }
 #' @export
-predict_botometer <- function(users, token = NULL, key = NULL, set_key = FALSE, parse = TRUE, verbose = TRUE) {
+predict_botometer <- function(users,
+                              token = NULL,
+                              key = NULL,
+                              set_key = FALSE,
+                              parse = TRUE,
+                              verbose = TRUE) {
   ## check rtweet token
   if (is.null(token)) {
     token <- rtweet::get_token()
@@ -66,6 +80,8 @@ predict_botometer <- function(users, token = NULL, key = NULL, set_key = FALSE, 
   ## if parse then combine into single data frame/table
   if (parse) {
     output <- do.call("rbind", output)
+    ## match with input order
+    output <- output[match(users_og, users), ]
   }
 
   ## return output
@@ -166,7 +182,8 @@ botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
 }
 
 get_timelines_for_botometer <- function(x, token = NULL) {
-  x <- rtweet::get_timelines(x, n = 200, check = FALSE, token = token, parse = FALSE)
+  x <- rtweet::get_timelines(x, n = 200, check = FALSE,
+    token = token, parse = FALSE)
   nms <- names(x)
   output <- vector("list", length(x))
   sp <- getOption("scipen")
@@ -196,7 +213,8 @@ lookup_users_for_botometer <- function(x, token = NULL) {
   dg <- getOption("digits")
   on.exit(options(scipen = sp, digits = dg), add = TRUE)
   options(scipen = 14, digits = 14)
-  x <- dapr::lap(seq_len(nrow(x)), ~ RJSONIO::toJSON(as.list(x[.x, ]), auto_unbox = TRUE, pretty = TRUE))
+  x <- dapr::lap(seq_len(nrow(x)), ~ RJSONIO::toJSON(as.list(x[.x, ]),
+    auto_unbox = TRUE, pretty = TRUE))
   names(x) <- nms
   x
 }

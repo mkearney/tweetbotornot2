@@ -1,5 +1,8 @@
 test_that("predict_botometer works", {
-  b <- predict_botometer(c("kearneymw", "jack"))
+  skip_on_cran()
+  b <- predict_botometer(c("kearneymw", "jack", NA_character_, "kearneymw"))
   expect_true(is.data.frame(b))
-  expect_equal(nrow(b), 2L)
+  expect_equal(nrow(b), 4L)
+  expect_equal(ncol(b), 3L)
+  expect_named(b, expected = c("user_id", "screen_name", "botometer"))
 })
