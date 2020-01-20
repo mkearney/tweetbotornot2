@@ -81,6 +81,16 @@ sampleit <- function(x, n) {
   }
 }
 
+#' Split test train
+#'
+#' Splits data frame into train and test sets
+#'
+#' @param .data Input data set
+#' @param .p Proportion of cases to appear in training data
+#' @param ... Optional, specify response variable via non-standard evaluation
+#' @return a list with "train" and "test" data frames
+#' @keywords internal
+#' @export
 split_test_train <- function(.data, .p = 0.80, ...) {
   y <- substitute(...)
   n <- round(nrow(.data) * .p, 0)
@@ -102,12 +112,22 @@ split_test_train <- function(.data, .p = 0.80, ...) {
   )
 }
 
+#' Log counts
+#'
+#' Safely (deals with zero and negative values) logs integers
+#'
+#' @param x Input data
+#' @return Output should match input class
+#' @keywords internal
+#' @export
 log_counts <- function(x) UseMethod("log_counts")
 
+#' @export
 log_counts.default <- function(x) {
   x
 }
 
+#' @export
 log_counts.integer <- function(x) {
   if ((m <- min(x, na.rm = TRUE)) < 0L) {
     x <- x + 0L - m
@@ -115,6 +135,7 @@ log_counts.integer <- function(x) {
   log1p(x)
 }
 
+#' @export
 log_counts.list <- function(x) {
   cols <- names(x)[dapr::vap_lgl(x, is.integer)]
   for (i in cols) {
@@ -123,6 +144,7 @@ log_counts.list <- function(x) {
   x
 }
 
+#' @export
 log_counts.data.table <- function(x) {
   cols <- names(x)[dapr::vap_lgl(x, is.integer)]
   for (i in cols) {
@@ -131,12 +153,12 @@ log_counts.data.table <- function(x) {
   x
 }
 
+#' @export
 log_counts.data.frame <- function(x) {
   cols <- names(x)[dapr::vap_lgl(x, is.integer)]
   x[, cols] <- dapr::lap(x[, cols, drop = FALSE], log_counts)
   x
 }
-
 
 is_user <- function(x) {
   is.character(x) && all(grepl("^[[:alnum:]_]+$", x))
