@@ -1,19 +1,25 @@
 
-@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i,900");
+/*@import url("https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i,900");*/
 
+@import url('https://fonts.googleapis.com/css?family=Public+Sans:400,400i,700,700i&display=swap');
 @import url(https://cdn.rawgit.com/tonsky/FiraCode/1.205/distr/fira_code.css);
 
 body {
-  font-family: Roboto, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.47;
   font-weight: 400;
   margin: .5em auto 5em auto;
 }
 
 h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
-  font-family: Roboto, sans-serif;
-  font-weight: 900;
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 700;
+}
+
+.contents h1, .contents h2, .contents h3, .contents h4 {
+  padding-top: 50px;
+  margin-top: -42px;
 }
 
 h1 {font-size: 2.1em}
@@ -52,8 +58,8 @@ p {
 }
 
 strong {
-  font-family: Roboto, sans-serif;
-  font-weight: 900;
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 700;
 }
 
 strong code {
