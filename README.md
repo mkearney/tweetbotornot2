@@ -20,8 +20,8 @@ status](https://ci.appveyor.com/api/projects/status/github/mkearney/tweetbotorno
 **`{tweetbotornot2}`** provides an out-of-the-box classifier for
 detecting Twitter bots that is [easy to use](#predict),
 [interpretable](#explain), [scalable](#rate-limits), and
-[performant](#about-model). It also provides a convenient interface for
-accessing the [botometer](https://botometer.iuni.iu.edu/) API.
+[performant](#about-model). It also provides a [convenient
+interface](#botometer) for accessing the **`botometer`** API.
 
 ## Installation
 
@@ -273,9 +273,9 @@ How features contributed to predictions in the original training data:
 
 ![](man/figures/README-shap.png)
 
-## [Botometer](https://botometer.iuni.iu.edu)
+## Botometer
 
-### Use `predict_botometer()` to access the botometer API
+### Use `predict_botometer()` to access [Botometer’s API](https://botometer.iuni.iu.edu)
 
 ``` r
 ## get botometer scores
@@ -287,7 +287,7 @@ predict_botometer(c('kearneymw', 'netflix_bot'))
 #> 2: 1203840834 netflix_bot           0.63105            0.556587
 ```
 
-### Comparison with `{tweetbotornot2}`
+### Botometer vs tweetbotornot2
 
 Accuracy of tweetbotornot versus botometer across multiple datasets:
 

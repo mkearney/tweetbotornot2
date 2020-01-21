@@ -83,7 +83,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><strong><code>{tweetbotornot2}</code></strong> provides an out-of-the-box classifier for detecting Twitter bots that is <a href="#predict">easy to use</a>, <a href="#explain">interpretable</a>, <a href="#rate-limits">scalable</a>, and <a href="#about-model">performant</a>. It also provides a convenient interface for accessing the <a href="https://botometer.iuni.iu.edu/">botometer</a> API.</p>
+<p><strong><code>{tweetbotornot2}</code></strong> provides an out-of-the-box classifier for detecting Twitter bots that is <a href="#predict">easy to use</a>, <a href="#explain">interpretable</a>, <a href="#rate-limits">scalable</a>, and <a href="#about-model">performant</a>. It also provides a <a href="#botometer">convenient interface</a> for accessing the <strong><code>botometer</code></strong> API.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -310,11 +310,11 @@
 </div>
 <div id="botometer" class="section level2">
 <h2 class="hasAnchor">
-<a href="#botometer" class="anchor"></a><a href="https://botometer.iuni.iu.edu">Botometer</a>
-</h2>
-<div id="use-predict_botometer-to-access-the-botometer-api" class="section level3">
+<a href="#botometer" class="anchor"></a>Botometer</h2>
+<div id="use-predict_botometer-to-access-botometers-api" class="section level3">
 <h3 class="hasAnchor">
-<a href="#use-predict_botometer-to-access-the-botometer-api" class="anchor"></a>Use <code>predict_botometer()</code> to access the botometer API</h3>
+<a href="#use-predict_botometer-to-access-botometers-api" class="anchor"></a>Use <code>predict_botometer()</code> to access <a href="https://botometer.iuni.iu.edu">Botometer’s API</a>
+</h3>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">## get botometer scores</span></span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="kw"><a href="reference/predict_botometer.html">predict_botometer</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">'kearneymw'</span>, <span class="st">'netflix_bot'</span>))</span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="co">#&gt; @kearneymw (1/2)</span></span>
@@ -323,10 +323,9 @@
 <span id="cb7-6"><a href="#cb7-6"></a><span class="co">#&gt; 1: 2973406683   kearneymw           0.03266            0.076513</span></span>
 <span id="cb7-7"><a href="#cb7-7"></a><span class="co">#&gt; 2: 1203840834 netflix_bot           0.63105            0.556587</span></span></code></pre></div>
 </div>
-<div id="comparison-with-tweetbotornot2" class="section level3">
+<div id="botometer-vs-tweetbotornot2" class="section level3">
 <h3 class="hasAnchor">
-<a href="#comparison-with-tweetbotornot2" class="anchor"></a>Comparison with <code>{tweetbotornot2}</code>
-</h3>
+<a href="#botometer-vs-tweetbotornot2" class="anchor"></a>Botometer vs tweetbotornot2</h3>
 <p>Accuracy of tweetbotornot versus botometer across multiple datasets:</p>
 <p><img src="reference/figures/README-modcomp.png"></p>
 <p><sup>1</sup> The built-in classifier was trained using [up to] the most recent 200 tweets from each user. That means all tweets older than the 200th tweet will be filtered out (ignored). It also means that estimates made on fewer than the most recent 200 tweets are unreliable–except in cases where a user doesn’t HAVE up to 200 eligible tweets. In other words, the classifier should work as expected if data are gathered via {rtweet}’s <code>get_timeline()</code> function with the <code>n</code> argument set equal to or greater than 200, i.e. <code><a href="https://rdrr.io/pkg/rtweet/man/get_timeline.html">rtweet::get_timelines(users, n = 200)</a></code>.</p>
