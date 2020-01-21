@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://tweetbotornot2.mikewk.com//index.html</loc>
+  </url>
+  <url>
+    <loc>https://tweetbotornot2.mikewk.com//reference/explain_bot.html</loc>
+  </url>
+  <url>
+    <loc>https://tweetbotornot2.mikewk.com//reference/log_counts.html</loc>
+  </url>
+  <url>
+    <loc>https://tweetbotornot2.mikewk.com//reference/predict_bot.html</loc>
+  </url>
+  <url>
+    <loc>https://tweetbotornot2.mikewk.com//reference/predict_botometer.html</loc>
+  </url>
+  <url>
+    <loc>https://tweetbotornot2.mikewk.com//reference/preprocess_bot.html</loc>
+  </url>
+  <url>
+    <loc>https://tweetbotornot2.mikewk.com//reference/split_test_train.html</loc>
+  </url>
+  <url>
+    <loc>https://tweetbotornot2.mikewk.com//reference/tweetbotornot2-package.html</loc>
+  </url>
+</urlset>

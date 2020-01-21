@@ -181,47 +181,6 @@ botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
   )
 }
 
-# get_timelines_for_botometer <- function(x, token = NULL) {
-#   x <- rtweet::get_timelines(x, n = 200, check = FALSE,
-#     token = token, parse = FALSE)
-#   for (i in seq_along(x)) {
-#     x[[i]] <- x[[i]][[1]]
-#     names(x[[i]])[names(x[[i]]) == "full_text"] <- "text"
-#   }
-#   sp <- getOption("scipen")
-#   dg <- getOption("digits")
-#   on.exit(options(scipen = sp, digits = dg), add = TRUE)
-#   options(scipen = 20, digits = 20)
-#   dapr::lap(x, ~ jsonlite::fromJSON(jsonlite::toJSON(.x), simplifyVector = TRUE, simplifyDataFrame = FALSE, simplifyMatrix = FALSE))
-# }
-#
-# lookup_users_for_botometer <- function(x, token = NULL) {
-#   x <- rtweet::lookup_users(x, token = token, parse = FALSE)
-#   if (NROW(x) == 0) {
-#     return(NULL)
-#   }
-#   nms <- x[['screen_name']]
-#   sp <- getOption("scipen")
-#   dg <- getOption("digits")
-#   on.exit(options(scipen = sp, digits = dg), add = TRUE)
-#   options(scipen = 20, digits = 20)
-#   x <- jsonlite::fromJSON(jsonlite::toJSON(x), simplifyVector = TRUE, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
-#   names(x) <- nms
-#   x
-# }
-#
-# search_tweets_for_botometer <- function(x, token = NULL) {
-#   x <- dapr::lap(x, rtweet::search_tweets, token = token, parse = FALSE)
-#   if (NROW(x) == 0) {
-#     return(NULL)
-#   }
-#   dapr::lap(x, ~ {
-#     .x <- .x[[1]]
-#     names(.x[["statuses"]])[names(.x[["statuses"]]) == "full_text"] <- "text"
-#     jsonlite::fromJSON(jsonlite::toJSON(.x), simplifyVector = TRUE, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
-#   })
-# }
-
 botometer_key <- function(x = NULL, set_key = FALSE) {
   ## look for key if not supplied directly
   x <- x %||% find_botometer_key()

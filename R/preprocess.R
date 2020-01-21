@@ -147,6 +147,7 @@ preprocess_bot_init <- function(x) {
   twt_min30 <- NULL
   bot <- NULL
   usr_actyr <- NULL
+  .i <- NULL
 
   if (!all(req_cols %in% names(x))) {
     .req_cols <- req_cols[!req_cols %in% names(x)]

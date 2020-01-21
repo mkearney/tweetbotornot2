@@ -33,4 +33,16 @@ test_that("predict_bot works", {
     ignore.environment = TRUE,
     ignore.srcref = TRUE
   ))
+
+
+  x <- predict_bot(data.frame(user_id = c("1203840834", "2973406683")))
+  expect_true(is.data.frame(x))
+  expect_true(inherits(x, "data.table"))
+  expect_true(nrow(x) == 2)
+  expect_equal(ncol(x), 3)
+  expect_true(all(c("user_id", "screen_name", "prob_bot") %in% names(x)))
+
+  x <- predict_bot_score(data.frame(user_id = c("1203840834", "2973406683")))
+  expect_true(is.numeric(x))
+  expect_equal(length(x), 2L)
 })
