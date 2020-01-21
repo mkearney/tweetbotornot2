@@ -158,7 +158,7 @@ preprocess_bot_init <- function(x) {
   data.table::setkey(data, user_id)
 
   ## only include up to 200 most recent tweets
-  data[, .i := seq_len(.n), by = user_id]
+  data[, .i := seq_len(.N), by = user_id]
   data <- data[.i <= 200L, ]
   data[, .i := NULL]
 
