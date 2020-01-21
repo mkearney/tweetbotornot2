@@ -125,7 +125,8 @@ botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
       return(data.table::data.table(
         user_id = user_id,
         screen_name = screen_name,
-        botometer = NA_real_
+        botometer_english = NA_real_,
+        botometer_universal = NA_real_
       ))
     }
     return(list())
