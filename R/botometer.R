@@ -111,7 +111,6 @@ botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
   .u <- httr::content(userdata)[c("id_str", "screen_name")]
   user_id <- .u[[1]]
   screen_name <- .u[[2]]
-
   ## if user info isn't valid, then return (skip the other API calls)
   if (length(screen_name) == 0) {
     ## preserve 'user' (input) information
@@ -131,7 +130,6 @@ botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
     }
     return(list())
   }
-
   ## update 'user' with returned screen name and set 'user_type'
   user <- screen_name
   user_type <- "screen_name"
@@ -142,19 +140,18 @@ botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
     token
   )
 
-  ## (3) search/tweets
+  ## (3) search/tweets endpoint
   mentions <- httr::GET(
     paste0(base_url, "search/tweets.json?q=", user, "&count=200"),
     token
   )
 
-  ## use returned objects to create req body
+  ## (4) check_account endpoint
   body <- RJSONIO::toJSON(list(
     timeline = httr::content(timeline, type = "application/json"),
     mentions = httr::content(mentions, type = "application/json"),
     user     = httr::content(userdata, type = "application/json")
   ), auto_unbox = TRUE, pretty = TRUE)
-
   ## send request to botometer API
   r <- httr::POST(
     "https://osome-botometer.p.mashape.com/2/check_account",
@@ -167,58 +164,63 @@ botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
   if (!parse) {
     return(r)
   }
-
   ## otherwise extract score and return as data table
-  score <- httr::content(r)[["scores"]][["english"]]
-
-  if (length(score) == 0L) {
-    score <- NA_real_
+  english <- httr::content(r)[["scores"]][["english"]]
+  universal <- httr::content(r)[["scores"]][["universal"]]
+  if (length(english) == 0L) {
+    english <- NA_real_
+  }
+  if (length(universal) == 0L) {
+    universal <- NA_real_
   }
   data.table::data.table(
     user_id = user_id,
     screen_name = screen_name,
-    botometer = score
+    botometer_english = english,
+    botometer_universal = universal
   )
 }
 
-get_timelines_for_botometer <- function(x, token = NULL) {
-  x <- rtweet::get_timelines(x, n = 200, check = FALSE,
-    token = token, parse = FALSE)
-  nms <- names(x)
-  output <- vector("list", length(x))
-  sp <- getOption("scipen")
-  dg <- getOption("digits")
-  on.exit(options(scipen = sp, digits = dg), add = TRUE)
-  options(scipen = 14, digits = 14)
-  for (i in seq_along(output)) {
-    xi <- x[[i]][[1]]
-    if (NROW(xi) == 0) {
-      output[[i]] <- ""
-    } else {
-      xi <- dapr::lap(seq_len(nrow(xi)), ~ as.list(xi[.x, ]))
-      output[[i]] <- RJSONIO::toJSON(xi, auto_unbox = TRUE, pretty = TRUE)
-    }
-  }
-  names(output) <- nms
-  output
-}
-
-lookup_users_for_botometer <- function(x, token = NULL) {
-  x <- rtweet::lookup_users(x, token = token, parse = FALSE)
-  if (NROW(x) == 0) {
-    return(NULL)
-  }
-  nms <- x[['screen_name']]
-  sp <- getOption("scipen")
-  dg <- getOption("digits")
-  on.exit(options(scipen = sp, digits = dg), add = TRUE)
-  options(scipen = 14, digits = 14)
-  x <- dapr::lap(seq_len(nrow(x)), ~ RJSONIO::toJSON(as.list(x[.x, ]),
-    auto_unbox = TRUE, pretty = TRUE))
-  names(x) <- nms
-  x
-}
-
+# get_timelines_for_botometer <- function(x, token = NULL) {
+#   x <- rtweet::get_timelines(x, n = 200, check = FALSE,
+#     token = token, parse = FALSE)
+#   for (i in seq_along(x)) {
+#     x[[i]] <- x[[i]][[1]]
+#     names(x[[i]])[names(x[[i]]) == "full_text"] <- "text"
+#   }
+#   sp <- getOption("scipen")
+#   dg <- getOption("digits")
+#   on.exit(options(scipen = sp, digits = dg), add = TRUE)
+#   options(scipen = 20, digits = 20)
+#   dapr::lap(x, ~ jsonlite::fromJSON(jsonlite::toJSON(.x), simplifyVector = TRUE, simplifyDataFrame = FALSE, simplifyMatrix = FALSE))
+# }
+#
+# lookup_users_for_botometer <- function(x, token = NULL) {
+#   x <- rtweet::lookup_users(x, token = token, parse = FALSE)
+#   if (NROW(x) == 0) {
+#     return(NULL)
+#   }
+#   nms <- x[['screen_name']]
+#   sp <- getOption("scipen")
+#   dg <- getOption("digits")
+#   on.exit(options(scipen = sp, digits = dg), add = TRUE)
+#   options(scipen = 20, digits = 20)
+#   x <- jsonlite::fromJSON(jsonlite::toJSON(x), simplifyVector = TRUE, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+#   names(x) <- nms
+#   x
+# }
+#
+# search_tweets_for_botometer <- function(x, token = NULL) {
+#   x <- dapr::lap(x, rtweet::search_tweets, token = token, parse = FALSE)
+#   if (NROW(x) == 0) {
+#     return(NULL)
+#   }
+#   dapr::lap(x, ~ {
+#     .x <- .x[[1]]
+#     names(.x[["statuses"]])[names(.x[["statuses"]]) == "full_text"] <- "text"
+#     jsonlite::fromJSON(jsonlite::toJSON(.x), simplifyVector = TRUE, simplifyDataFrame = FALSE, simplifyMatrix = FALSE)
+#   })
+# }
 
 botometer_key <- function(x = NULL, set_key = FALSE) {
   ## look for key if not supplied directly

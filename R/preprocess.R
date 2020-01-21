@@ -116,6 +116,7 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
 }
 
 preprocess_bot_init <- function(x) {
+  ## store order
   ogusrs <- attr(x, ".ogusrs")
 
   ##--------------------------------------------------------------------------##
@@ -152,9 +153,15 @@ preprocess_bot_init <- function(x) {
     stop("Missing the following variables: ",
       paste(.req_cols, collapse = ", "), call. = FALSE)
   }
-
+  ## copy and reorder rows by user and then date
   data <- data.table::copy(x[order(ffactor(user_id), -created_at), ])
   data.table::setkey(data, user_id)
+
+  ## only include up to 200 most recent tweets
+  data[, .i := seq_len(.n), by = user_id]
+  data <- data[.i <= 200L, ]
+  data[, .i := NULL]
+
   data[, usr_allrt := all(is_retweet), by = user_id]
   data[, text := ifelse(usr_allrt, text, ifelse(is_retweet, NA_character_, text))]
   data[, display_text_width := ifelse(usr_allrt, display_text_width,

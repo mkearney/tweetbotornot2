@@ -9,7 +9,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  cache = TRUE
 )
 options(width = 90, digits = 5, scipen = 6,
   datatable.print.topn = 5, datatable.print.nrows = 50)
@@ -23,109 +24,137 @@ library(tweetbotornot2)
 [![CRAN status](https://www.r-pkg.org/badges/version/tweetbotornot2)](https://CRAN.R-project.org/package=tweetbotornot2)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![Codecov test coverage](https://codecov.io/gh/mkearney/tweetbotornot2/branch/master/graph/badge.svg)](https://codecov.io/gh/mkearney/tweetbotornot2?branch=master)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/mkearney/tweetbotornot2?branch=master&svg=true)](https://ci.appveyor.com/project/mkearney/tweetbotornot2)
 <!-- badges: end -->
 
-{tweetbotornot2} provides an out-of-the-box classifier for detecting Twitter bots that 
-is easy to use, volume-friendly (classify over two hundred thousands accounts per day),
-accurate (see paper), robust and customizable (update the model with new or user-defined training data),
-and explainable (view feature contributions behind each estimated probability).
-    
+**`{tweetbotornot2}`** provides an out-of-the-box classifier for detecting Twitter
+bots that is [easy to use](#predict), [interpretable](#explain), 
+[scalable](#rate-limits), and [performant](#about-model). It also provides a
+convenient interface for accessing the
+[botometer](https://botometer.iuni.iu.edu/) API.
+
 ## Installation
 
-You can install the released version of tweetbotornot2 from [CRAN](https://CRAN.R-project.org) with:
+<!-- Install the released version of tweetbotornot2 from [CRAN](https://CRAN.R-project.org) with: -->
+
+<!-- ``` r -->
+<!-- ## install from CRAN -->
+<!-- install.packages("tweetbotornot2") -->
+<!-- ``` -->
+
+Install the development version of `{tweetbotornot2}` from [Github](https://github.com) with:
 
 ``` r
-install.packages("tweetbotornot2")
+## install {remotes} if not already
+if (!"remotes" %in% installed.packages()) {
+  install.packages("remotes")
+}
+
+## install from github
+remotes::install_github("mkearney/tweetbotornot2")
 ```
 
 ## Predict
 
-### Use `predict_bot()` to use the built-in bot classifier
+### Use `predict_bot()` to run the built-in bot classifier
 
-Enter screen names of Twitter users of interest and `predict_bot()` 
-returns the estimated probability that one or more Twitter accounts is a bot.
+Provide a vector or data frame of Twitter handles and `predict_bot()` will
+return the estimated probability of each account being a bot.
 
 ```{r}
-## pass screen names to predict function
-predict_bot(c("MagicRealismBot", "netflix_bot", "rdpeng", "hspter"))
+## vector of screen names
+screen_names <- c(
+  "American__Voter", ## (these ones should be bots)
+  "MagicRealismBot",
+  "netflix_bot",
+  "mitchhedbot",
+  "rstats4ds",
+  "thinkpiecebot",
+  "tidyversetweets",
+  "newstarsbot",
+  "CRANberriesFeed",
+  "AOC",             ## (these ones should NOT be bots)
+  "realDonaldTrump",
+  "NateSilver538",
+  "ChadPergram",
+  "kumailn",
+  "mindykaling",
+  "hspter",
+  "rdpeng",
+  "kearneymw",
+  "dfreelon",
+  "AmeliaMN",
+  "winston_chang"
+)
+
+## data frame with screen names **must be named 'screen_name'**
+screen_names_df <- data.frame(screen_name = screen_names)
+
+## vector -> bot estimates
+predict_bot(screen_names)
+
+## data.frame -> bot estimates
+#predict_bot(screen_names_df)
 ```
 
-`predict_bot()` also accepts previously collected Twitter data (e.g., data returned by `rtweet::get_timelines()`)
+This also works on Twitter user IDs.
+
+``` r
+## vector of user IDs (strings of numbers, ranging from 2-19 digits)
+user_ids <- rtweet::lookup_users(screen_names)[["user_id"]]
+
+## data frame with user IDs **must be named 'user_id'**
+user_ids_df <- data.frame(user_id = users)
+
+## vector -> bot estimates
+predict_bot(user_ids)
+
+## data.frame -> bot estimates
+predict_bot(user_ids_df)
+```
+
+The input given to `predict_bot()` can also be Twitter data returned by 
+[{rtweet}](https://rtweet.info), i.e., `rtweet::get_timelines()`<sup>1</sup>.
 
 ```{r}
-## estimate bot probabilities
-twtdat <- rtweet::get_timelines(
-  c(
-    ## (these ones should be bots)
-    "American__Voter",
-    "MagicRealismBot", 
-    "mitchhedbot",
-    "rstats4ds", 
-    "thinkpiecebot", 
-    "tidyversetweets", 
-    "newstarsbot",
-    ## (these ones should be Nots)
-    "AOC", 
-    "kearneymw", 
-    "kumailn", 
-    "mindykaling", 
-    "NateSilver538", 
-    "realDonaldTrump", 
-    "hspter",
-    "rdpeng"),
-  n = 200, check = FALSE)
+## timeline data returned by {rtweet}
+twtdat <- rtweet::get_timelines(screen_names, n = 200, check = FALSE)
 
-## view output (order most likely to least like bot)
-predict_bot(twtdat)[order(-prob_bot), ]
+## generate predictions from twitter data frame
+predict_bot(twtdat)
 ```
 
 ## Explain
 
-### Use `explain_bot()` to see the contributions made by each feature in the model
+### Use `explain_bot()` to see the contributions made by each feature
 
 View prediction contributions from top five features (for each user) in the model
 
 ```{r}
-## view top features in predictions of each user
-explain_bot(twtdat)[order(screen_name, 
-  -abs(value)), ][feature %in% feature[1:5], 
-    .SD, on = "feature"][1:50, -1]
+## view top feature contributions in prediction for each user
+explain_bot(twtdat)[
+  order(screen_name, 
+  -abs(value)), ][
+    feature %in% feature[1:5],
+    .SD, on = "feature" ][1:50, -1]
 ```
 
+## Rate limits
 
-## Update
+If you have already collected user timeline data, `predict_bot()` has no rate 
+limit. If you don't already have timeline data, then `predict_bot()` relies on 
+calls to Twitter's `users/timeline` API, which is rate limited to 1,500 calls 
+per 15 minutes (for bearer tokens) or 900 calls per 15 minutes (for user tokens).
+Fortunately, each prediction requires only one call to Twitter's API, so it's 
+possible to get up to 6,000 predictions per hour or 144,000 predictions per 
+day<sup>2</sup>.
 
-### Use `sample_via_twitter_lists()` to gather new users
+```{r}
+## view bearer token rate limit for users/timeline endpoint
+rtweet::rate_limit(rtweet::bearer_token(), "get_timeline")
 
-`sample_via_twitter_lists()` leverages Twitter lists to snowball sample from a few users (input) to hundreds or even thousands of users (output). Use it to find and label "bot" and "not" (bot) Twitter accounts via snowball sampling
-
-``` r
-## find up to 10,000 accounts similar to these well-known Twitter bots
-bots <- sample_via_twitter_lists(c("netflix_bot", "American__Voter", "UTLEGtracker", 
-  "JVLast", "EndlessJeopardy", "PossumEveryHour", "MagicRealismBot", "factbot1"), 
-  n = 10000)
-
-## retrieve user and timeline information for each user
-bots_tmls <- tweetbotornot_collect(bots)
-```
-
-### Use `preprocess_bot()` to prepare user timeline data for modeling
-
-Extract and transform numeric features from the data
-
-``` r
-## wrangle, munge, aggregate data for modelling
-bots_tmls <- preprocess_bot(twtdat)
-```
-
-### Use `tweetbotornot_update` to train the model on new data
-
-``` r
-## train model
-new_model <- tweetbotornot_update(newdata)
-
-## use updated model to get new predictions
-predict_bot(new_model, c("netflix_bot", "mindykaling"))
+## view user token rate limit for users/timeline endpoint
+rtweet::rate_limit(rtweet::get_token(), "get_timeline")
 ```
 
 ## About Model
@@ -180,7 +209,7 @@ How features contributed to predictions in the original training data:
 
 ## [Botometer](https://botometer.iuni.iu.edu)
 
-### Use `predict_botometer()` to get their automation probability scores
+### Use `predict_botometer()` to access the botometer API
 
 ```{r}
 ## get botometer scores
@@ -193,3 +222,17 @@ predict_botometer(c('kearneymw', 'netflix_bot'))
 Accuracy of tweetbotornot versus botometer across multiple datasets:
 
 ![](man/figures/README-modcomp.png)
+
+
+
+<sup>1</sup> The built-in classifier was trained using [up to] the most recent 200
+tweets from each user. That means all tweets older than the 200th tweet will be
+filtered out (ignored). It also means that estimates made on fewer than the most
+recent 200 tweets are unreliable–except in cases where a user doesn't HAVE up to
+200 eligible tweets. In other words, the classifier should work as expected if
+data are gathered via {rtweet}'s `get_timeline()` function with the `n` argument
+set equal to or greater than 200, i.e. `rtweet::get_timelines(users, n = 200)`.
+
+<sup>2</sup> This is in contrast to [botometer](https://botometer.iuni.iu.edu/), 
+which recently increased its rate limit to 2,000 calls *per day* (up from 1,000 
+calls per day).

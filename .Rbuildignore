@@ -9,3 +9,5 @@
 ^tweetbotornot2\.Rproj$
 .DS_Store
 ^codecov\.yml$
+^appveyor\.yml$
+^README_cache$
