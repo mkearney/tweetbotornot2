@@ -4,6 +4,9 @@
     <loc>https://tweetbotornot2.mikewk.com//index.html</loc>
   </url>
   <url>
+    <loc>https://tweetbotornot2.mikewk.com//reference/chunk_users.html</loc>
+  </url>
+  <url>
     <loc>https://tweetbotornot2.mikewk.com//reference/explain_bot.html</loc>
   </url>
   <url>
@@ -23,5 +26,8 @@
   </url>
   <url>
     <loc>https://tweetbotornot2.mikewk.com//reference/tweetbotornot2-package.html</loc>
+  </url>
+  <url>
+    <loc>https://tweetbotornot2.mikewk.com//articles/example.html</loc>
   </url>
 </urlset>

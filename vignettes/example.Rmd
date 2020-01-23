@@ -39,11 +39,11 @@ a local, interactive session of R and then do the following:
    ```{r, eval=FALSE}
    rstats <- rtweet::search_tweets("rstats")
    ```
-1. On the same machine, save the token as an `.rds` file
+1. The above code actually creates (as a side effect) a Twitter token for you. So, on the same machine, save the token as an `.rds` file
    ```{r, eval=FALSE}
    saveRDS(rtweet::get_token(), "rtweet_token.rds")
    ```
-1. Upload the saved token file to the **cloud/server**
+1. Upload the saved token file to your **cloud/server**
 
 Once the token is uploaded to the cloud, you can either read the token file and 
 specify the resulting object in each {tweetbotornot} call, e.g.,
@@ -52,16 +52,16 @@ token <- readRDS("rtweet_token.rds")
 predict_bot("jack", token = token)
 ```
 
-To avoid having to specify the token each time, you can also set the path to 
-the token as an R environment variable, i.e.,
+or set the path to the saved token as an R environment variable. The latter 
+option (example below) allows you to avoid having to specify the token each time.
 
 ```{r, eval=FALSE}
 Sys.setenv(TWITTER_PAT = "/path/to/rtweet_token.rds")
 predict_bot("jack")
 ```
 
-To set the R environment variable for current **and** future sessions, you can 
-also try `tfse::set_renv()`.
+To set the R environment variable for current **and** future sessions (on a
+given machine), you can also try `tfse::set_renv()`.
 
 ```{r, eval=FALSE}
 tfse::set_renv(TWITTER_PAT = "/path/to/rtweet_token.rds")
@@ -72,7 +72,7 @@ tfse::set_renv(TWITTER_PAT = "/path/to/rtweet_token.rds")
 The main use of this package is to get bot-probability estimates of one or more
 Twitter accounts. This can be done with the `predict_bot()` function.
 
-```{r}
+```{r, eval=FALSE}
 predict_bot(c("netflix_bot", "PatrickMahomes"))
 ```
 
@@ -85,33 +85,35 @@ on a number of things; try the code below to see if you can), you should be able
 to get estimates for up to 1,500 accounts at a time. You can use the following
 code to see if the bearer token will work for you.
 
-```{r}
+```{r, eval=FALSE}
 ## specify token if R environment variable isn't set
 rtweet::search_tweets("rstats", token = rtweet::bearer_token())
 ```
 
 If the above code returns a data frame of tweets data, then you can specify the
 bearer token in `predict_bot()` the same way. The code below checks your bearer
-token rate limit before and after the `predict_bot()` call.
+token rate limit before and after executing `predict_bot()`.
 
-```{r}
+```{r, eval=FALSE}
 rtweet::rate_limit(rtweet::bearer_token(), "get_timeline")
 predict_bot(c("netflix_bot", "PatrickMahomes"), token = rtweet::bearer_token())
 rtweet::rate_limit(rtweet::bearer_token(), "get_timeline")
 ```
 
-### Larger requests
+### Example users
 
-For the purpose of examples, I will use a list of accounts associated with
-candidates in the 2020 U.S. Democratic presidential primary.
+For example purposes, this vignette retrieves user IDs from accounts appearing
+on a Twitter list of 2020 Democratic presidential candidates.
 
-```{r}
+```{r, eval=FALSE}
 ## get accounts from the twitter list: twitter.com/kearneymw/lists/dems-pres-2020
 d20 <- rtweet::lists_members(owner_user = "kearneymw", slug = "dems-pres-2020")
 
 ## store IDs as 'users' vector
 users <- d20$user_id
 ```
+
+### Making large requests
 
 To get estimates for hundreds or thousands of users, it is wise to use a for-loop 
 and wait for the rate limit reset by sleeping between calls. This can be done in a number
@@ -147,6 +149,48 @@ output <- do.call("rbind", output)
 
 ## sort by bot probability
 output[order(-prob_bot), ]
+```
+
+If you'd also like to keep the raw (timeline) Twitter data, the above for loop
+can be modified to collect the Twitter data prior to generating estimates with
+`predict_bot()`. This is demonstrated in the code below.
+
+```{r, eval=FALSE}
+## convert users vector (user IDs or screen names) a list of 10-user chunks
+users <- chunk_users(users, n = 10)
+
+## initialize output vectors
+output <- vector("list", length(users))
+usrtml <- vector("list", length(users))
+
+for (i in seq_along(output)) {
+  ## check rate limit- if < 10 calls remain, sleep until reset
+  print(rl <- rtweet::rate_limit(query = "get_timelines"))
+  while (rl[["remaining"]] < 10L) {
+    cat("Sleeping for", round(max(as.numeric(rl[["reset"]], "mins"), 0.5), 1), "minutes...")
+    Sys.sleep(max(as.numeric(rl[["reset"]], "secs"), 30))
+    rl <- rtweet::rate_limit(query = "get_timelines")
+  }
+  
+  ## get user timeline data (set check=FALSE to avoid excessive rate-limit calls)
+  usrtml[[i]] <- rtweet::get_timelines(users[[i]], n = 200, check = FALSE)
+  
+  ## use the timeline data to get bot estimates
+  output[[i]] <- predict_bot(users[[i]])
+  
+  ## print iteration update
+  cat(sprintf("%d / %d (%.f%%)\n", i, length(output), i / length(output) * 100))
+}
+
+## merge both data lists into single data tables
+output <- do.call("rbind", output)
+usrtml <- do.call("rbind", usrtml)
+
+## sort by bot probability
+output[order(-prob_bot), ]
+
+## preview timeline data
+usrtml[1:10, ]
 ```
 
 

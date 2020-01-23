@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Preprocess data — preprocess_bot • tweetbotornot2</title>
+<title>Articles • tweetbotornot2</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -44,8 +44,7 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Preprocess data — preprocess_bot" />
-<meta property="og:description" content="Prepares data for Twitter bot model" />
+<meta property="og:title" content="Articles" />
 <meta property="og:image" content="https://tweetbotornot2.mikewk.com/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -66,7 +65,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-topic">
+    <div class="container template-article-index">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -127,74 +126,17 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Preprocess data</h1>
-    <small class="dont-index">Source: <a href='https://github.com/mkearney/tweetbotornot2/blob/master/R/preprocess.R'><code>R/preprocess.R</code></a></small>
-    <div class="hidden name"><code>preprocess_bot.Rd</code></div>
+      <h1>Articles</h1>
     </div>
 
-    <div class="ref-description">
-    <p>Prepares data for Twitter bot model</p>
+    <div class="section ">
+      <h3>All vignettes</h3>
+      <p class="section-desc"></p>
+
+      <ul>
+        <li><a href="example.html">example</a></li>
+      </ul>
     </div>
-
-    <pre class="usage"><span class='fu'>preprocess_bot</span>(<span class='no'>x</span>, <span class='kw'>batch_size</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='no'>...</span>)</pre>
-
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>x</th>
-      <td><p>Input data either character vector of Twitter identifiers (user IDs
-or screen names) or a data frame of Twitter data</p></td>
-    </tr>
-    <tr>
-      <th>batch_size</th>
-      <td><p>Number of users to process per batch. Relevant if x contains user
-names or timeline data for more than 100 Twitter users. Because the data
-processing involves user-level aggregation (grouping by user), it can create
-computational bottlenecks that are easily avoided by breaking the data into
-batches of users. Manipulating this number may speed up or slow down data
-processing, but for most jobs the speed difference is likely negligible,
-meaning this argument may only be useful if you are working on either a very
-slow/low-memory machine or very fast/high-memory machine. Default is 100.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Other arguments are passed on to rtweet functions. This is mostly
-just to allow users to specify the Twitter API token, e.g.,
-<code><a href='predict_bot.html'>predict_bot("kearneymw", token = token)</a></code> or
-<code><a href='predict_bot.html'>predict_bot("kearneymw", token = rtweet::bearer_token())</a></code>.</p></td>
-    </tr>
-    </table>
-
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>Returns a data frame used to generate predictions</p>
-
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-
-<span class='co'>#' ## vector of screen names</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"netflix_bot"</span>, <span class='st'>"aasfdiouyasdoifu"</span>, <span class='st'>"madeupusernamethatiswrong"</span>,
-  <span class='st'>"a_quilt_bot"</span>, <span class='st'>"jack"</span>, <span class='st'>"SHAQ"</span>, <span class='st'>"aasfdiouyasdoifu5"</span>, <span class='fl'>NA_character_</span>,
-  <span class='st'>"madeupusernamethatiswrong"</span>, <span class='st'>"a_quilt_bot"</span>)
-
-<span class='co'>## preprocess_bot - returns features data.table</span>
-<span class='no'>ftrs</span> <span class='kw'>&lt;-</span> <span class='fu'>preprocess_bot</span>(<span class='no'>x</span>)
-
-<span class='co'>## use features to generate predictions</span>
-<span class='fu'><a href='predict_bot.html'>predict_bot</a></span>(<span class='no'>ftrs</span>)
-
-}</div></pre>
-  </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
   </div>
 </div>
 

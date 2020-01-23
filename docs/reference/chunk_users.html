@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Preprocess data — preprocess_bot • tweetbotornot2</title>
+<title>Chunk users — chunk_users • tweetbotornot2</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -44,8 +44,8 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Preprocess data — preprocess_bot" />
-<meta property="og:description" content="Prepares data for Twitter bot model" />
+<meta property="og:title" content="Chunk users — chunk_users" />
+<meta property="og:description" content="Convert an atomic vector of users into a list of atomic vectors" />
 <meta property="og:image" content="https://tweetbotornot2.mikewk.com/logo.png" />
 <meta name="twitter:card" content="summary" />
 
@@ -127,65 +127,57 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Preprocess data</h1>
+    <h1>Chunk users</h1>
     <small class="dont-index">Source: <a href='https://github.com/mkearney/tweetbotornot2/blob/master/R/preprocess.R'><code>R/preprocess.R</code></a></small>
-    <div class="hidden name"><code>preprocess_bot.Rd</code></div>
+    <div class="hidden name"><code>chunk_users.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prepares data for Twitter bot model</p>
+    <p>Convert an atomic vector of users into a list of atomic vectors</p>
     </div>
 
-    <pre class="usage"><span class='fu'>preprocess_bot</span>(<span class='no'>x</span>, <span class='kw'>batch_size</span> <span class='kw'>=</span> <span class='fl'>100</span>, <span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>chunk_users</span>(<span class='no'>x</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>50</span>)
+
+<span class='fu'>chunk_users_data</span>(<span class='no'>x</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>50</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Input data either character vector of Twitter identifiers (user IDs
-or screen names) or a data frame of Twitter data</p></td>
+      <td><p>Input vector of users. Duplicates and missing values will be removed</p></td>
     </tr>
     <tr>
-      <th>batch_size</th>
-      <td><p>Number of users to process per batch. Relevant if x contains user
-names or timeline data for more than 100 Twitter users. Because the data
-processing involves user-level aggregation (grouping by user), it can create
-computational bottlenecks that are easily avoided by breaking the data into
-batches of users. Manipulating this number may speed up or slow down data
-processing, but for most jobs the speed difference is likely negligible,
-meaning this argument may only be useful if you are working on either a very
-slow/low-memory machine or very fast/high-memory machine. Default is 100.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Other arguments are passed on to rtweet functions. This is mostly
-just to allow users to specify the Twitter API token, e.g.,
-<code><a href='predict_bot.html'>predict_bot("kearneymw", token = token)</a></code> or
-<code><a href='predict_bot.html'>predict_bot("kearneymw", token = rtweet::bearer_token())</a></code>.</p></td>
+      <th>n</th>
+      <td><p>Number of users per chunk (users returned in each element of output)</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Returns a data frame used to generate predictions</p>
+    <p>chunk_users: returns a list containing character vectors</p>
+<p>chunk_users_data: returns a list containing data frames</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
+    <pre class="examples"><div class='input'><span class='co'>## this generates a vector of user-ID like values</span>
+<span class='no'>users</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/lapply.html'>replicate</a></span>(<span class='fl'>1000</span>, <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span>(<span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(<span class='fl'>0</span>:<span class='fl'>9</span>, <span class='fl'>14</span>, <span class='kw'>replace</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>), <span class='kw'>collapse</span> <span class='kw'>=</span> <span class='st'>""</span>))
 
-<span class='co'>#' ## vector of screen names</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"netflix_bot"</span>, <span class='st'>"aasfdiouyasdoifu"</span>, <span class='st'>"madeupusernamethatiswrong"</span>,
-  <span class='st'>"a_quilt_bot"</span>, <span class='st'>"jack"</span>, <span class='st'>"SHAQ"</span>, <span class='st'>"aasfdiouyasdoifu5"</span>, <span class='fl'>NA_character_</span>,
-  <span class='st'>"madeupusernamethatiswrong"</span>, <span class='st'>"a_quilt_bot"</span>)
+<span class='co'>## break users into 100-user chunks</span>
+<span class='no'>chunky</span> <span class='kw'>&lt;-</span> <span class='fu'>chunk_users</span>(<span class='no'>users</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>100</span>)
 
-<span class='co'>## preprocess_bot - returns features data.table</span>
-<span class='no'>ftrs</span> <span class='kw'>&lt;-</span> <span class='fu'>preprocess_bot</span>(<span class='no'>x</span>)
-
-<span class='co'>## use features to generate predictions</span>
-<span class='fu'><a href='predict_bot.html'>predict_bot</a></span>(<span class='no'>ftrs</span>)
-
-}</div></pre>
+<span class='co'>## preview returned object</span>
+<span class='fu'><a href='https://rdrr.io/r/utils/str.html'>str</a></span>(<span class='no'>chunky</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; List of 10
+#&gt;  $ 1 : chr [1:100] "64535844716441" "53128564585941" "03750512081470" "29216925390655" ...
+#&gt;  $ 2 : chr [1:100] "06588468983506" "57967309064013" "86968632617983" "76826207331464" ...
+#&gt;  $ 3 : chr [1:100] "45574744729766" "92340306290797" "09043922131374" "34933059692503" ...
+#&gt;  $ 4 : chr [1:100] "98601340122455" "11613377289433" "10115528664675" "77798269368947" ...
+#&gt;  $ 5 : chr [1:100] "29614240934078" "52720505943003" "92472231674999" "82267010612506" ...
+#&gt;  $ 6 : chr [1:100] "95599325636021" "45453350949018" "14049189821589" "63900385623940" ...
+#&gt;  $ 7 : chr [1:100] "09264578036016" "98818264722188" "31056028130515" "22703306277501" ...
+#&gt;  $ 8 : chr [1:100] "09476457530512" "06256710404310" "31969390011629" "18487862262344" ...
+#&gt;  $ 9 : chr [1:100] "49212413256107" "62582948719336" "58711367016100" "90442040141661" ...
+#&gt;  $ 10: chr [1:100] "77764853520978" "42526509963091" "90704664817619" "45479891945807" ...</div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
