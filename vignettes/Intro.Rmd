@@ -1,5 +1,5 @@
 ---
-title: "example"
+title: "Intro"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{example}
@@ -14,13 +14,46 @@ knitr::opts_chunk$set(
 )
 ```
 
+This vignette provides a quick introduction to the tweetbotornot2 package. 
+**Section 1** gives quick examples of the main functionality offered by 
+this package. **Section 2** provides background and addresses some common issues
+related to obtaining the proper authorization for interacting with Twitter's 
+REST API. And **Section 3** offers some guidance (and an example) on how to 
+collect bot estimates/Twitter data for a large number of users.
+
 ```{r setup}
 ## load package
 library(tweetbotornot2)
 ```
 
+## 1. Bot probability estimates
 
-## Authentication
+The main use case for {tweetbotornot} is to get bot-probability estimates for 
+one or more Twitter accounts. This can be done with either `predict_bot()` or
+`predict_bot_score()`. The former returns a `data.table` with user information
+(user ID and screen name). The latter returns a numeric vector of estimates 
+matched to the input order of users.
+
+```{r, eval=FALSE}
+## returns a data.table
+predict_bot(c("netflix_bot", "PatrickMahomes"))
+
+## returns a numeric vector
+predict_bot_score(c("netflix_bot", "PatrickMahomes"))
+```
+
+One thing missing from the above code of course is the actual Twitter data used
+to make the bot probability estimates. When screen names (or user IDs) are 
+provided, tweetbotornot2 does that work (with the help of the [rtweet](https://rtweet.info) package)
+behind the scenes. But in order for the rtweet package to work, users must 
+obtain the proper authorization to interact with Twitter's REST API. For most
+users this process is now a breeze–users can run the above code and if necessary
+they will be prompted to authorize access to the embedded rtweet app. But for 
+users working on remote servers or trying to generate estimates on thousands or
+millions of Twitter uers, the next section will get into some of the relevant
+details regarding API authorization.
+
+## 2. Authentication
 
 Use of this package typically<sup>1</sup> requires, at a minimum, (a) internet 
 connection and (b) an active Twitter account–i.e., you will need to authorize
@@ -29,11 +62,13 @@ of your Twitter account. If you're already signed into Twitter on your web
 browser, this can be done with a single click. Otherwise, you will have to sign 
 in and *then* click.
 
+### Saving/using Twitter API token
+
 If you're working in an interactive R session on a local machine (in the RStudio 
-application, for example), this process should be relatively straight forward.
-<sup>1</sup> If you're working on a remote server or in the cloud (in RStudio 
-Server, for example), then it's a bit trickier. The easiest solution is to start 
-a local, interactive session of R and then do the following:
+application, for example), this process should be relatively straight forward.<sup>1</sup>
+However, if you're working on a remote server or in the cloud (in RStudio Server,
+for example), then it's a bit trickier. The easiest solution is to start a local, 
+interactive session of R and then do the following:
 
 1. **On a machine with a local version of R**, send API request via {rtweet}
    ```{r, eval=FALSE}
@@ -44,61 +79,65 @@ a local, interactive session of R and then do the following:
    saveRDS(rtweet::get_token(), "rtweet_token.rds")
    ```
 1. Upload the saved token file to your **cloud/server**
-
-Once the token is uploaded to the cloud, you can either read the token file and 
+1. Once the token is uploaded to the cloud, you can read the token file and 
 specify the resulting object in each {tweetbotornot} call, e.g.,
-```{r, eval=FALSE}
-token <- readRDS("rtweet_token.rds")
-predict_bot("jack", token = token)
-```
-
-or set the path to the saved token as an R environment variable. The latter 
-option (example below) allows you to avoid having to specify the token each time.
-
-```{r, eval=FALSE}
-Sys.setenv(TWITTER_PAT = "/path/to/rtweet_token.rds")
-predict_bot("jack")
-```
-
-To set the R environment variable for current **and** future sessions (on a
-given machine), you can also try `tfse::set_renv()`.
-
-```{r, eval=FALSE}
-tfse::set_renv(TWITTER_PAT = "/path/to/rtweet_token.rds")
-```
-
-## Bot scores
-
-The main use of this package is to get bot-probability estimates of one or more
-Twitter accounts. This can be done with the `predict_bot()` function.
-
-```{r, eval=FALSE}
-predict_bot(c("netflix_bot", "PatrickMahomes"))
-```
+   ```{r, eval=FALSE}
+   token <- readRDS("rtweet_token.rds")
+   predict_bot("jack", token = token)
+   ```
+   or set the path to the saved token as an R environment variable. The latter 
+   option (example below) allows you to avoid having to specify the token each time.
+   ```{r, eval=FALSE}
+   Sys.setenv(TWITTER_PAT = "/path/to/rtweet_token.rds")
+   predict_bot("jack")
+   ```
+   or set the R environment variable for current **and** future sessions (on a
+   given machine), you can also try `tfse::set_renv()`.
+   ```{r, eval=FALSE}
+   tfse::set_renv(TWITTER_PAT = "/path/to/rtweet_token.rds")
+   ```
 
 ### Rate limits
 
-Assuming you haven't made any recent calls to Twitter's API, the above function
-should work for up to 900 users at a time. If you are able to convert your Twitter
-token into a bearer token with {rtweet} (this is not always possible; it depends
-on a number of things; try the code below to see if you can), you should be able
-to get estimates for up to 1,500 accounts at a time. You can use the following
-code to see if the bearer token will work for you.
+Assuming users haven't made any recent calls to Twitter's API, the predict functions
+described earlier should work for up to 900 users at a time. For some users (e.g., those with a Twitter 
+token created using credentials from their own Twitter application or tokens 
+created at a time of sufficiently provided permissions by the embedded rtweet app)
+it's possible to get estimates for up to 1,500 accounts at a time using Twitter's
+application-only (bearer) token. Converting a normal user token into a bearer 
+token requires an access level of `"read-write-directmessages"`. The code below 
+should print the access level associated with your current token.
 
 ```{r, eval=FALSE}
-## specify token if R environment variable isn't set
-rtweet::search_tweets("rstats", token = rtweet::bearer_token())
+## view access level of current token
+print(rtweet:::api_access_level())
 ```
 
-If the above code returns a data frame of tweets data, then you can specify the
-bearer token in `predict_bot()` the same way. The code below checks your bearer
-token rate limit before and after executing `predict_bot()`.
+The drawback to the application-only authorization method is that your requests
+will contain no information about the authenticating user. The upside to this
+kind of token is access to a different set of rate limits. The different rate 
+limits aren't always desirable (compared to the normal user token), but for the
+some endpoints–like `users/timelines` (900 vs. 1,500 requests per 15 min.) and
+`search/tweets` (18,000 vs. 45,000 requests per 15 min.)–the difference is quite 
+significant.
+
+If the output from the above code was `"read-write-directmessages"`, then users
+can specify the bearer token via `rtweet::bearer_token()` for the `token` argument
+in bot-predicting calls. The code below, for example, checks the bearer token rate
+limit before and after executing `predict_bot()`.
 
 ```{r, eval=FALSE}
+## check bearer token rate limit
 rtweet::rate_limit(rtweet::bearer_token(), "get_timeline")
+
+## get bot estimates for two users
 predict_bot(c("netflix_bot", "PatrickMahomes"), token = rtweet::bearer_token())
+
+## re-check bearer token rate limit
 rtweet::rate_limit(rtweet::bearer_token(), "get_timeline")
 ```
+
+## 3. Getting estimates for lots of users
 
 ### Example users
 
@@ -113,7 +152,7 @@ d20 <- rtweet::lists_members(owner_user = "kearneymw", slug = "dems-pres-2020")
 users <- d20$user_id
 ```
 
-### Making large requests
+### Making larger requests
 
 To get estimates for hundreds or thousands of users, it is wise to use a for-loop 
 and wait for the rate limit reset by sleeping between calls. This can be done in a number

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bots • tweetbotornot2</title>
+<title>Intro • tweetbotornot2</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.1/css/v4-shims.min.css" integrity="sha256-A6jcAdwFD48VMjlI3GDxUd+eCQa7/KWy6G9oe/ovaPA=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Bots">
+<meta property="og:title" content="Intro">
 <meta property="og:description" content="">
 <meta property="og:image" content="https://tweetbotornot2.mikewk.com/logo.png">
 <meta name="twitter:card" content="summary">
@@ -62,10 +62,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/Intro.html">Bots</a>
-    </li>
-    <li>
-      <a href="../articles/example.html">Bots</a>
+      <a href="../articles/Intro.html">Intro</a>
     </li>
   </ul>
 </li>
@@ -90,21 +87,33 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Bots</h1>
+      <h1>Intro</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/mkearney/tweetbotornot2/blob/master/vignettes/example.Rmd"><code>vignettes/example.Rmd</code></a></small>
-      <div class="hidden name"><code>example.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/mkearney/tweetbotornot2/blob/master/vignettes/Intro.Rmd"><code>vignettes/Intro.Rmd</code></a></small>
+      <div class="hidden name"><code>Intro.Rmd</code></div>
 
     </div>
 
     
     
+<p>This vignette provides a quick introduction to the tweetbotornot2 package. <strong>Section 1</strong> gives quick examples of the main functionality offered by this package. <strong>Section 2</strong> provides background and addresses some common issues related to obtaining the proper authorization for interacting with Twitter’s REST API. And <strong>Section 3</strong> offers some guidance (and an example) on how to collect bot estimates/Twitter data for a large number of users.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">## load package</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(tweetbotornot2)</span></code></pre></div>
+<div id="bot-probability-estimates" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bot-probability-estimates" class="anchor"></a>1. Bot probability estimates</h2>
+<p>The main use case for {tweetbotornot} is to get bot-probability estimates for one or more Twitter accounts. This can be done with either <code><a href="../reference/predict_bot.html">predict_bot()</a></code> or <code><a href="../reference/predict_bot.html">predict_bot_score()</a></code>. The former returns a <code>data.table</code> with user information (user ID and screen name). The latter returns a numeric vector of estimates matched to the input order of users.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">## returns a data.table</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="kw"><a href="../reference/predict_bot.html">predict_bot</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"netflix_bot"</span>, <span class="st">"PatrickMahomes"</span>))</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co">## returns a numeric vector</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="kw"><a href="../reference/predict_bot.html">predict_bot_score</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"netflix_bot"</span>, <span class="st">"PatrickMahomes"</span>))</span></code></pre></div>
+<p>One thing missing from the above code of course is the actual Twitter data used to make the bot probability estimates. When screen names (or user IDs) are provided, tweetbotornot2 does that work (with the help of the <a href="https://rtweet.info">rtweet</a> package) behind the scenes. But in order for the rtweet package to work, users must obtain the proper authorization to interact with Twitter’s REST API. For most users this process is now a breeze–users can run the above code and if necessary they will be prompted to authorize access to the embedded rtweet app. But for users working on remote servers or trying to generate estimates on thousands or millions of Twitter uers, the next section will get into some of the relevant details regarding API authorization.</p>
+</div>
 <div id="authentication" class="section level2">
 <h2 class="hasAnchor">
-<a href="#authentication" class="anchor"></a>Authentication</h2>
+<a href="#authentication" class="anchor"></a>2. Authentication</h2>
 <p>Use of this package typically<sup>1</sup> requires, at a minimum, (a) internet connection and (b) an active Twitter account–i.e., you will need to authorize rtweet’s <em>rstats2twitter</em> app to act (communicate from R to Twitter) on behalf of your Twitter account. If you’re already signed into Twitter on your web browser, this can be done with a single click. Otherwise, you will have to sign in and <em>then</em> click.</p>
 <div id="savingusing-twitter-api-token" class="section level3">
 <h3 class="hasAnchor">
@@ -113,39 +122,29 @@
 <ol style="list-style-type: decimal">
 <li>
 <p><strong>On a machine with a local version of R</strong>, send API request via {rtweet}</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>rstats &lt;-<span class="st"> </span>rtweet<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rtweet/man/search_tweets.html">search_tweets</a></span>(<span class="st">"rstats"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>rstats &lt;-<span class="st"> </span>rtweet<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rtweet/man/search_tweets.html">search_tweets</a></span>(<span class="st">"rstats"</span>)</span></code></pre></div>
 </li>
 <li>
 <p>The above code actually creates (as a side effect) a Twitter token for you. So, on the same machine, save the token as an <code>.rds</code> file</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span>(rtweet<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rtweet/man/get_tokens.html">get_token</a></span>(), <span class="st">"rtweet_token.rds"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span>(rtweet<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rtweet/man/get_tokens.html">get_token</a></span>(), <span class="st">"rtweet_token.rds"</span>)</span></code></pre></div>
 </li>
 <li><p>Upload the saved token file to your <strong>cloud/server</strong></p></li>
 <li>
 <p>Once the token is uploaded to the cloud, you can read the token file and specify the resulting object in each {tweetbotornot} call, e.g.,</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>token &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"rtweet_token.rds"</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw"><a href="../reference/predict_bot.html">predict_bot</a></span>(<span class="st">"jack"</span>, <span class="dt">token =</span> token)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>token &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(<span class="st">"rtweet_token.rds"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="../reference/predict_bot.html">predict_bot</a></span>(<span class="st">"jack"</span>, <span class="dt">token =</span> token)</span></code></pre></div>
 <p>or set the path to the saved token as an R environment variable. The latter option (example below) allows you to avoid having to specify the token each time.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Sys.setenv.html">Sys.setenv</a></span>(<span class="dt">TWITTER_PAT =</span> <span class="st">"/path/to/rtweet_token.rds"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="../reference/predict_bot.html">predict_bot</a></span>(<span class="st">"jack"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Sys.setenv.html">Sys.setenv</a></span>(<span class="dt">TWITTER_PAT =</span> <span class="st">"/path/to/rtweet_token.rds"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw"><a href="../reference/predict_bot.html">predict_bot</a></span>(<span class="st">"jack"</span>)</span></code></pre></div>
 <p>or set the R environment variable for current <strong>and</strong> future sessions (on a given machine), you can also try <code><a href="https://tfse.mikewk.com//reference/set_renv.html">tfse::set_renv()</a></code>.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>tfse<span class="op">::</span><span class="kw"><a href="https://tfse.mikewk.com//reference/set_renv.html">set_renv</a></span>(<span class="dt">TWITTER_PAT =</span> <span class="st">"/path/to/rtweet_token.rds"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>tfse<span class="op">::</span><span class="kw"><a href="https://tfse.mikewk.com//reference/set_renv.html">set_renv</a></span>(<span class="dt">TWITTER_PAT =</span> <span class="st">"/path/to/rtweet_token.rds"</span>)</span></code></pre></div>
 </li>
 </ol>
 </div>
-</div>
-<div id="bot-probability-estimates" class="section level2">
-<h2 class="hasAnchor">
-<a href="#bot-probability-estimates" class="anchor"></a>Bot probability estimates</h2>
-<p>The main use case for {tweetbotornot} is to get bot-probability estimates for one or more Twitter accounts. This can be done with either <code><a href="../reference/predict_bot.html">predict_bot()</a></code> or <code><a href="../reference/predict_bot.html">predict_bot_score()</a></code>. The former returns a <code>data.table</code> with user information (user ID and screen name). The latter returns a numeric vector of estimates matched to the input order of users.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">## returns a data.table</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw"><a href="../reference/predict_bot.html">predict_bot</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"netflix_bot"</span>, <span class="st">"PatrickMahomes"</span>))</span>
-<span id="cb7-3"><a href="#cb7-3"></a></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="co">## returns a numeric vector</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="kw"><a href="../reference/predict_bot.html">predict_bot_score</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"netflix_bot"</span>, <span class="st">"PatrickMahomes"</span>))</span></code></pre></div>
-<div id="twitter-rate-limits" class="section level3">
+<div id="rate-limits" class="section level3">
 <h3 class="hasAnchor">
-<a href="#twitter-rate-limits" class="anchor"></a>Twitter rate limits</h3>
-<p>Assuming users haven’t made any recent calls to Twitter’s API, the predict functions should work for up to 900 users at a time. For some users (e.g., those with a Twitter token created using credentials from their own Twitter application or tokens created at a time of sufficiently provided permissions by the embedded rtweet app) it’s possible to get estimates for up to 1,500 accounts at a time using Twitter’s application-only (bearer) token. Converting a normal user token into a bearer token requires an access level of <code>"read-write-directmessages"</code>. The code below should print the access level associated with your current token.</p>
+<a href="#rate-limits" class="anchor"></a>Rate limits</h3>
+<p>Assuming users haven’t made any recent calls to Twitter’s API, the predict functions described earlier should work for up to 900 users at a time. For some users (e.g., those with a Twitter token created using credentials from their own Twitter application or tokens created at a time of sufficiently provided permissions by the embedded rtweet app) it’s possible to get estimates for up to 1,500 accounts at a time using Twitter’s application-only (bearer) token. Converting a normal user token into a bearer token requires an access level of <code>"read-write-directmessages"</code>. The code below should print the access level associated with your current token.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">## view access level of current token</span></span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(rtweet<span class="op">:::</span><span class="kw">api_access_level</span>())</span></code></pre></div>
 <p>The drawback to the application-only authorization method is that your requests will contain no information about the authenticating user. The upside to this kind of token is access to a different set of rate limits. The different rate limits aren’t always desirable (compared to the normal user token), but for the some endpoints–like <code>users/timelines</code> (900 vs. 1,500 requests per 15 min.) and <code>search/tweets</code> (18,000 vs. 45,000 requests per 15 min.)–the difference is quite significant.</p>
@@ -159,6 +158,10 @@
 <span id="cb9-7"><a href="#cb9-7"></a><span class="co">## re-check bearer token rate limit</span></span>
 <span id="cb9-8"><a href="#cb9-8"></a>rtweet<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rtweet/man/rate_limit.html">rate_limit</a></span>(rtweet<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rtweet/man/bearer_token.html">bearer_token</a></span>(), <span class="st">"get_timeline"</span>)</span></code></pre></div>
 </div>
+</div>
+<div id="getting-estimates-for-lots-of-users" class="section level2">
+<h2 class="hasAnchor">
+<a href="#getting-estimates-for-lots-of-users" class="anchor"></a>3. Getting estimates for lots of users</h2>
 <div id="example-users" class="section level3">
 <h3 class="hasAnchor">
 <a href="#example-users" class="anchor"></a>Example users</h3>
@@ -169,9 +172,9 @@
 <span id="cb10-4"><a href="#cb10-4"></a><span class="co">## store IDs as 'users' vector</span></span>
 <span id="cb10-5"><a href="#cb10-5"></a>users &lt;-<span class="st"> </span>d20<span class="op">$</span>user_id</span></code></pre></div>
 </div>
-<div id="making-large-requests" class="section level3">
+<div id="making-larger-requests" class="section level3">
 <h3 class="hasAnchor">
-<a href="#making-large-requests" class="anchor"></a>Making large requests</h3>
+<a href="#making-larger-requests" class="anchor"></a>Making larger requests</h3>
 <p>To get estimates for hundreds or thousands of users, it is wise to use a for-loop and wait for the rate limit reset by sleeping between calls. This can be done in a number of ways, but the functions <code><a href="../reference/chunk_users.html">chunk_users()</a></code> and <code><a href="../reference/chunk_users.html">chunk_users_data()</a></code> are provided to make this easier. The code below should work for either user or bearer (rtweet) token. It also prints out rate limit information and percent complete information.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">## convert users vector (user IDs or screen names) a list of 10-user chunks</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a>users &lt;-<span class="st"> </span><span class="kw"><a href="../reference/chunk_users.html">chunk_users</a></span>(users, <span class="dt">n =</span> <span class="dv">10</span>)</span>
@@ -248,8 +251,9 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#authentication">Authentication</a></li>
-      <li><a href="#bot-probability-estimates">Bot probability estimates</a></li>
+<li><a href="#bot-probability-estimates">1. Bot probability estimates</a></li>
+      <li><a href="#authentication">2. Authentication</a></li>
+      <li><a href="#getting-estimates-for-lots-of-users">3. Getting estimates for lots of users</a></li>
       </ul>
 </div>
       </div>

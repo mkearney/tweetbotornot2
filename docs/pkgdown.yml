@@ -2,7 +2,7 @@ pandoc: 2.7.3
 pkgdown: 1.4.1.9000
 pkgdown_sha: 90572181f1ac83b56089ab14c16f4d9e063f216b
 articles:
-  example: example.html
+  Intro: Intro.html
 urls:
   reference: https://tweetbotornot2.mikewk.com//reference
   article: https://tweetbotornot2.mikewk.com//articles
