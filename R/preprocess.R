@@ -50,7 +50,7 @@ preprocess_bot.data.frame <- function(x, batch_size = 100, ...) {
     x <- data.table::data.table(x)
     attr(x, ".ogusrs") <- ogusrs
   } else {
-    x <- data.table::data.table(x)
+    x <- data.table::as.data.table(x)
   }
   preprocess_bot(x, batch_size = batch_size, ...)
 }
@@ -75,8 +75,9 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
     ogusrs <- unique(x$user_id[!is.na(x$user_id)])
   }
   ## if no batches, process and return
-  x <- preprocess_bot_init(x)
-  uid <- unique(x[, user_id])
+  preprocess_bot_init(x)
+  uid <- levels(x[, user_id])
+
   if (is.null(batch_size) || isFALSE(batch_size) || length(uid) <= batch_size) {
     x <- preprocess_bot_group(x)
     attr(x, ".ogusrs") <- ogusrs
@@ -84,14 +85,7 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
   }
 
   ## split data by user
-  uid <- factor(x[, user_id], levels = uid)
-  i <- cut(
-    as.integer(uid),
-    breaks = ceiling(length(levels(uid)) / batch_size),
-    right = TRUE,
-    labels = FALSE
-  )
-  x <- split(x, i)
+  x <- chunk_users_data(x, batch_size)
 
   ## setup progress bar
   pb <- progress::progress_bar$new(
@@ -116,6 +110,26 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
 }
 
 preprocess_bot_init <- function(x) {
+  ## check columns
+  if (!all(req_cols %in% names(x))) {
+    .req_cols <- req_cols[!req_cols %in% names(x)]
+    stop("Missing the following variables: ",
+      paste(.req_cols, collapse = ", "), call. = FALSE)
+  }
+  ## set key
+  data.table::setkey(x, user_id)
+
+  ## copy and reorder rows by user and then date
+  user_id <- NULL
+  created_at <- NULL
+  x[, user_id := ffactor(user_id)]
+  setorder(x, user_id, -created_at)
+  invisible()
+}
+
+
+
+preprocess_bot_group0 <- function(x) {
   ## store order
   ogusrs <- attr(x, ".ogusrs")
 
@@ -149,14 +163,8 @@ preprocess_bot_init <- function(x) {
   usr_actyr <- NULL
   .i <- NULL
 
-  if (!all(req_cols %in% names(x))) {
-    .req_cols <- req_cols[!req_cols %in% names(x)]
-    stop("Missing the following variables: ",
-      paste(.req_cols, collapse = ", "), call. = FALSE)
-  }
-  ## copy and reorder rows by user and then date
-  data <- data.table::copy(x[order(ffactor(user_id), -created_at), ])
-  data.table::setkey(data, user_id)
+  ## copy data
+  data <- data.table::copy(x)
 
   ## only include up to 200 most recent tweets
   data[, .i := seq_len(.N), by = user_id]
@@ -201,6 +209,7 @@ preprocess_bot_init <- function(x) {
 
 
 preprocess_bot_group <- function(data) {
+  data <- preprocess_bot_group0(data)
   ##--------------------------------------------------------------------------##
   ##                           (FOR CRAN CHECKS)                              ##
   ##--------------------------------------------------------------------------##
@@ -313,7 +322,9 @@ preprocess_bot_group <- function(data) {
     ),
     by = user_id
     ]
-  cbind(data[, -"usr_prfim"], model.matrix_(data[, .(usr_prfim)]))
+  data <- cbind(data[, -"usr_prfim"], model.matrix_(data[, .(usr_prfim)]))
+  data[, user_id := as.character(user_id)]
+  data
 }
 
 model.matrix_ <- function(x) {
@@ -353,3 +364,105 @@ req_cols <- c("user_id",
   "verified"
 )
 
+
+#' Chunk users
+#'
+#' Convert an atomic vector of users into a list of atomic vectors
+#'
+#' @param x Input vector of users. Duplicates and missing values will be removed
+#' @param n Number of users per chunk (users returned in each element of output)
+#' @return chunk_users: returns a list containing character vectors
+#' @examples
+#' ## this generates a vector of user-ID like values
+#' users <- replicate(1000, paste(sample(0:9, 14, replace = TRUE), collapse = ""))
+#'
+#' ## break users into 100-user chunks
+#' chunky <- chunk_users(users, n = 100)
+#'
+#' ## preview returned object
+#' str(chunky, 1)
+#'
+#' @export
+chunk_users <- function(x, n = 50) {
+  UseMethod("chunk_users")
+}
+
+#' @export
+chunk_users.default <- function(x, n = 50) {
+  stopifnot(is.atomic(x))
+  x <- as.character(unique(x[!is.na(x)]))
+  split(x, cut(seq_along(x), ceiling(length(x) / n), labels = FALSE))
+}
+
+#' @rdname chunk_users
+#' @return chunk_users_data: returns a list containing data frames
+#' @export
+chunk_users_data <- function(x, n = 50) {
+  UseMethod("chunk_users_data")
+}
+
+#' @export
+chunk_users_data.factor <- function(x, n = 50) {
+  x <- as.character(x)
+  chunk_users_data(x, n)
+}
+
+#' @export
+chunk_users_data.default <- function(x, n = 50) {
+  stop(
+    "chunk_users_data expects a data frame with a user_id or screen_name column",
+    call. = FALSE
+  )
+}
+
+#' @export
+chunk_users_data.character <- function(x, n = 50) {
+  if (is_ids(x)) {
+    x <- data.table::data.table(user_id = x)
+  } else if (is_user(x)) {
+    x <- data.table::data.table(screen_name = x)
+  } else {
+    stop("Must supply data frame or vector of Twitter users")
+  }
+  chunk_users_data(x, n)
+}
+
+#' @export
+chunk_users_data.data.frame <- function(x, n = 50) {
+  x <- data.table::as.data.table(x)
+  chunk_users_data(x, n)
+}
+
+#' @export
+chunk_users_data.data.table <- function(x, n = 50) {
+  if ("user_id" %in% names(x)) {
+    user_id <- NULL
+    if (is.factor(x[, user_id])) {
+      uid <- x[, user_id]
+    } else {
+      uid <- ffactor(x[, user_id])
+    }
+    return(split(x, cut(
+      as.integer(uid),
+      breaks = ceiling(length(levels(uid)) / n),
+      labels = FALSE
+    )))
+  }
+  if (!"screen_name" %in% names(x)) {
+    stop(
+      "chunk_users_data expects a data frame with a user_id or screen_name column",
+      call. = FALSE
+    )
+  }
+  screen_name <- NULL
+  if (is.factor(x[, screen_name])) {
+    usn <- x[, screen_name]
+  } else {
+    usn <- ffactor(x[, screen_name])
+  }
+  split(x, cut(
+    as.integer(usn),
+    breaks = ceiling(length(levels(usn)) / n),
+    labels = FALSE
+  ))
+}

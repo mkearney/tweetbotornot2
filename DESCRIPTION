@@ -30,6 +30,9 @@ Imports:
 RoxygenNote: 7.0.2
 Suggests: 
     testthat (>= 2.1.0),
-    covr
+    covr,
+    knitr,
+    rmarkdown
 URL: https://github.com/mkearney/tweetbotornot2
 BugReports: https://github.com/mkearney/tweetbotornot2/issues
+VignetteBuilder: knitr

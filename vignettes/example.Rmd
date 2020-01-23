@@ -1,0 +1,160 @@
+---
+title: "example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+## load package
+library(tweetbotornot2)
+```
+
+
+## Authentication
+
+Use of this package typically<sup>1</sup> requires, at a minimum, (a) internet 
+connection and (b) an active Twitter account–i.e., you will need to authorize
+rtweet's *rstats2twitter* app to act (communicate from R to Twitter) on behalf 
+of your Twitter account. If you're already signed into Twitter on your web 
+browser, this can be done with a single click. Otherwise, you will have to sign 
+in and *then* click.
+
+If you're working in an interactive R session on a local machine (in the RStudio 
+application, for example), this process should be relatively straight forward.
+<sup>1</sup> If you're working on a remote server or in the cloud (in RStudio 
+Server, for example), then it's a bit trickier. The easiest solution is to start 
+a local, interactive session of R and then do the following:
+
+1. **On a machine with a local version of R**, send API request via {rtweet}
+   ```{r, eval=FALSE}
+   rstats <- rtweet::search_tweets("rstats")
+   ```
+1. On the same machine, save the token as an `.rds` file
+   ```{r, eval=FALSE}
+   saveRDS(rtweet::get_token(), "rtweet_token.rds")
+   ```
+1. Upload the saved token file to the **cloud/server**
+
+Once the token is uploaded to the cloud, you can either read the token file and 
+specify the resulting object in each {tweetbotornot} call, e.g.,
+```{r, eval=FALSE}
+token <- readRDS("rtweet_token.rds")
+predict_bot("jack", token = token)
+```
+
+To avoid having to specify the token each time, you can also set the path to 
+the token as an R environment variable, i.e.,
+
+```{r, eval=FALSE}
+Sys.setenv(TWITTER_PAT = "/path/to/rtweet_token.rds")
+predict_bot("jack")
+```
+
+To set the R environment variable for current **and** future sessions, you can 
+also try `tfse::set_renv()`.
+
+```{r, eval=FALSE}
+tfse::set_renv(TWITTER_PAT = "/path/to/rtweet_token.rds")
+```
+
+## Bot scores
+
+The main use of this package is to get bot-probability estimates of one or more
+Twitter accounts. This can be done with the `predict_bot()` function.
+
+```{r}
+predict_bot(c("netflix_bot", "PatrickMahomes"))
+```
+
+### Rate limits
+
+Assuming you haven't made any recent calls to Twitter's API, the above function
+should work for up to 900 users at a time. If you are able to convert your Twitter
+token into a bearer token with {rtweet} (this is not always possible; it depends
+on a number of things; try the code below to see if you can), you should be able
+to get estimates for up to 1,500 accounts at a time. You can use the following
+code to see if the bearer token will work for you.
+
+```{r}
+## specify token if R environment variable isn't set
+rtweet::search_tweets("rstats", token = rtweet::bearer_token())
+```
+
+If the above code returns a data frame of tweets data, then you can specify the
+bearer token in `predict_bot()` the same way. The code below checks your bearer
+token rate limit before and after the `predict_bot()` call.
+
+```{r}
+rtweet::rate_limit(rtweet::bearer_token(), "get_timeline")
+predict_bot(c("netflix_bot", "PatrickMahomes"), token = rtweet::bearer_token())
+rtweet::rate_limit(rtweet::bearer_token(), "get_timeline")
+```
+
+### Larger requests
+
+For the purpose of examples, I will use a list of accounts associated with
+candidates in the 2020 U.S. Democratic presidential primary.
+
+```{r}
+## get accounts from the twitter list: twitter.com/kearneymw/lists/dems-pres-2020
+d20 <- rtweet::lists_members(owner_user = "kearneymw", slug = "dems-pres-2020")
+
+## store IDs as 'users' vector
+users <- d20$user_id
+```
+
+To get estimates for hundreds or thousands of users, it is wise to use a for-loop 
+and wait for the rate limit reset by sleeping between calls. This can be done in a number
+of ways, but the functions `chunk_users()` and `chunk_users_data()` are provided
+to make this easier. The code below should work for either user or bearer (rtweet)
+token. It also prints out rate limit information and percent complete information.
+
+```{r, eval=FALSE}
+## convert users vector (user IDs or screen names) a list of 10-user chunks
+users <- chunk_users(users, n = 10)
+
+## initialize output vector
+output <- vector("list", length(users))
+
+for (i in seq_along(output)) {
+  ## check rate limit- if < 10 calls remain, sleep until reset
+  print(rl <- rtweet::rate_limit(query = "get_timelines"))
+  while (rl[["remaining"]] < 10L) {
+    cat("Sleeping for", round(max(as.numeric(rl[["reset"]], "mins"), 0.5), 1), "minutes...")
+    Sys.sleep(max(as.numeric(rl[["reset"]], "secs"), 30))
+    rl <- rtweet::rate_limit(query = "get_timelines")
+  }
+  
+  ## get bot estimates
+  output[[i]] <- predict_bot(users[[i]])
+  
+  ## print iteration update
+  cat(sprintf("%d / %d (%.f%%)\n", i, length(output), i / length(output) * 100))
+}
+
+## merge into single data table
+output <- do.call("rbind", output)
+
+## sort by bot probability
+output[order(-prob_bot), ]
+```
+
+
+<sup>1</sup> Unless you've already collected user timeline data, **[`{tweetbotornot2}`](tweetbotornot2.mikewk.com)** 
+relies on [`{rtweet}`](https://rtweet.info) to pull data from [Twitter's REST API](https://developer.twitter.com/en/docs).
+
+<sup>2</sup> The first time you make a request [from your computer] to Twitter's API's, a 
+browser should pop-up, asking you to authorize the app. After that, the
+authorization token is stored and remembered behind the scenes (you will only 
+have to reauthorize the app if your Twitter settings or token credentials get 
+reset or if you use a different machine).
