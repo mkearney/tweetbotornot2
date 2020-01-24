@@ -15,6 +15,8 @@ knitr::opts_chunk$set(
 options(width = 90, digits = 5, scipen = 6,
   datatable.print.topn = 5, datatable.print.nrows = 50)
 library(tweetbotornot2)
+version <- as.vector(read.dcf('DESCRIPTION')[, 'Version'])
+version <- gsub('-', '.', version)
 ```
 
 # tweetbotornot2 <img src="man/figures/logo.png" width="160px" align="right" />
@@ -25,6 +27,15 @@ library(tweetbotornot2)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![Codecov test coverage](https://codecov.io/gh/mkearney/tweetbotornot2/branch/master/graph/badge.svg)](https://codecov.io/gh/mkearney/tweetbotornot2?branch=master)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/mkearney/tweetbotornot2?branch=master&svg=true)](https://ci.appveyor.com/project/mkearney/tweetbotornot2)
+[![CRAN_latest_release_date](https://www.r-pkg.org/badges/last-release/tweetbotornot2)](https://cran.r-project.org/package=tweetbotornot2)
+[![CRAN_Status_Badge_version_last_release](https://www.r-pkg.org/badges/version-last-release/tweetbotornot2)](https://cran.r-project.org/package=tweetbotornot2)
+[![CRAN_Status_Badge_version_ago](https://www.r-pkg.org/badges/version-ago/tweetbotornot2)](https://cran.r-project.org/package=tweetbotornot2)
+[![metacran downloads](https://cranlogs.r-pkg.org/badges/tweetbotornot2)](https://cran.r-project.org/package=tweetbotornot2)
+[![star this repo](https://githubbadges.com/star.svg?user=mkearney&repo=tweetbotornot2&style=flat)](https://github.com/mkearney/tweetbotornot2)
+[![fork this repo](https://githubbadges.com/fork.svg?user=mkearney&repo=tweetbotornot2&style=flat)](https://github.com/mkearney/tweetbotornot2/fork)
+[![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
+[![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg?style=flat-square)](commits/master)
+[![license](https://img.shields.io/badge/license-MIT + file LICENSE-lightgrey.svg)](https://choosealicense.com/)
 <!-- badges: end -->
 
 **`{tweetbotornot2}`** provides an out-of-the-box classifier for detecting Twitter

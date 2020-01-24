@@ -1,8 +1,8 @@
 ---
-title: "Getting estimates for lots of users"
+title: "Bulk use"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{bulk}
+  %\VignetteIndexEntry{bulk-use}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
