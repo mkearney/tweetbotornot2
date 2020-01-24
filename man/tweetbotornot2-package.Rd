@@ -8,10 +8,8 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
-This package provides an out-of-the-box classifier for detecting Twitter bots
-    that is easy to use, volume-friendly (classify over two hundred thousands accounts per day),
-    accurate (see paper), robust and customizable (update the model with new or user-defined training data),
-    and explainable (view contributions for features used in estimates).
+Providing an out-of-the-box classifier for detecting Twitter bots that
+    is easy to use, interpretable, scalable, and accurate.
 }
 \seealso{
 Useful links:

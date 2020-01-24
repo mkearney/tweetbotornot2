@@ -1,0 +1,160 @@
+---
+title: "Getting estimates for lots of users"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette offers some guidance (with working example) on how to collect bot 
+estimates (and, optionally, Twitter timeline data) for a large number of users.
+
+```{r setup}
+## load package
+library(tweetbotornot2)
+```
+
+## Example data
+
+For example purposes, this vignette retrieves user IDs from accounts appearing
+on a Twitter list of 2020 Democratic presidential candidates.
+
+```{r, eval=FALSE}
+## get accounts from the twitter list: twitter.com/kearneymw/lists/dems-pres-2020
+d20 <- rtweet::lists_members(owner_user = "kearneymw", slug = "dems-pres-2020")
+
+## preview data
+head(d20[, c("screen_name", "description")])
+
+## store user IDs as 'users' vector
+users <- d20$user_id
+```
+
+## Bulk downloading
+
+To get estimates for hundreds, thousands, or even millions of users, it is wise 
+to use a for-loop and wait for the rate limit reset by sleeping between calls. 
+This can be done in a number of ways, but the functions `chunk_users()` and
+`chunk_users_data()` are provided to make this easier. The code below should work 
+for either user or bearer (rtweet) token. It also provides a safety `oops` counter
+and prints out rate limit and percent complete information.
+
+```{r, eval=FALSE}
+## convert users vector (user IDs or screen names) a list of 10-user chunks
+users <- chunk_users(users, n = 10)
+
+## initialize output vector
+output <- vector("list", length(users))
+
+
+for (i in seq_along(output)) {
+  ## set oops counter
+  oop <- 0L
+
+  ## check rate limit- if < 10 calls remain, sleep until reset
+  print(rl <- rtweet::rate_limit(query = "get_timelines"))
+  while (rl[["remaining"]] < 10L) {
+    ## prevent infinite loop
+    oops <- oops + 1L
+    if (oops > 3L) {
+      stop("rate_limit() isn't returning rate limit data", call. = FALSE)
+    }
+    cat("Sleeping for", round(max(as.numeric(rl[["reset"]], "mins"), 0.5), 1), "minutes...")
+    Sys.sleep(max(as.numeric(rl[["reset"]], "secs"), 30))
+    rl <- rtweet::rate_limit(query = "get_timelines")
+  }
+  
+  ## get bot estimates
+  output[[i]] <- predict_bot(users[[i]])
+  
+  ## print iteration update
+  cat(sprintf("%d / %d (%.f%%)\n", i, length(output), i / length(output) * 100))
+}
+
+## merge into single data table
+output <- do.call("rbind", output)
+
+## sort by bot probability
+output[order(-prob_bot), ]
+```
+
+If you'd also like to keep the raw (timeline) Twitter data, the above for loop
+can be modified to collect the Twitter data prior to generating estimates with
+`predict_bot()`. This is demonstrated in the code below.
+
+```{r, eval=FALSE}
+## convert users vector (user IDs or screen names) a list of 10-user chunks
+users <- chunk_users(users, n = 10)
+
+## initialize output vectors
+output <- vector("list", length(users))
+usrtml <- vector("list", length(users))
+
+for (i in seq_along(output)) {
+  ## set oops counter
+  oop <- 0L
+  
+  ## check rate limit- if < 10 calls remain, sleep until reset
+  print(rl <- rtweet::rate_limit(query = "get_timelines"))
+  while (rl[["remaining"]] < 10L) {
+    ## prevent infinite loop
+    oops <- oops + 1L
+    if (oops > 3L) {
+      stop("rate_limit() isn't returning rate limit data", call. = FALSE)
+    }
+    cat("Sleeping for", round(max(as.numeric(rl[["reset"]], "mins"), 0.5), 1), "minutes...")
+    Sys.sleep(max(as.numeric(rl[["reset"]], "secs"), 30))
+    rl <- rtweet::rate_limit(query = "get_timelines")
+  }
+  
+  ## get user timeline data (set check=FALSE to avoid excessive rate-limit calls)
+  usrtml[[i]] <- rtweet::get_timelines(users[[i]], n = 200, check = FALSE)
+  
+  ## use the timeline data to get bot estimates
+  output[[i]] <- predict_bot(users[[i]])
+  
+  ## print iteration update
+  cat(sprintf("%d / %d (%.f%%)\n", i, length(output), i / length(output) * 100))
+}
+
+## merge both data lists into single data tables
+output <- do.call("rbind", output)
+usrtml <- do.call("rbind", usrtml)
+
+## sort by bot probability
+output[order(-prob_bot), ]
+
+## preview timeline data
+usrtml[1:10, ]
+```
+
+
+## Bulk processing
+
+If you've already collected lots of user timeline data, the processing of timeline
+data into numeric feature data can still be computationally intensive. To deal 
+with this, the feature engineering function, `preprocess_bot()`, includes a 
+`batch_size` argument, which allows you to specify how many users should be
+processed at a time. You can adjust the size to optimize to your machine.
+
+```{r, eval=FALSE}
+preprocess_bot(usrtml, batch_size = 200)
+```
+
+
+<sup>1</sup> Unless you've already collected user timeline data, **[`{tweetbotornot2}`](tweetbotornot2.mikewk.com)** 
+relies on [`{rtweet}`](https://rtweet.info) to pull data from [Twitter's REST API](https://developer.twitter.com/en/docs).
+
+<sup>2</sup> The first time you make a request [from your computer] to Twitter's API's, a 
+browser should pop-up, asking you to authorize the app. After that, the
+authorization token is stored and remembered behind the scenes (you will only 
+have to reauthorize the app if your Twitter settings or token credentials get 
+reset or if you use a different machine).

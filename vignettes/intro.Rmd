@@ -1,5 +1,5 @@
 ---
-title: "Intro"
+title: "Introduction"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{example}
@@ -16,10 +16,9 @@ knitr::opts_chunk$set(
 
 This vignette provides a quick introduction to the tweetbotornot2 package. 
 **Section 1** gives quick examples of the main functionality offered by 
-this package. **Section 2** provides background and addresses some common issues
+this package. And **Section 2** provides background and addresses some common issues
 related to obtaining the proper authorization for interacting with Twitter's 
-REST API. And **Section 3** offers some guidance (and an example) on how to 
-collect bot estimates/Twitter data for a large number of users.
+REST API.
 
 ```{r setup}
 ## load package
@@ -136,102 +135,6 @@ predict_bot(c("netflix_bot", "PatrickMahomes"), token = rtweet::bearer_token())
 ## re-check bearer token rate limit
 rtweet::rate_limit(rtweet::bearer_token(), "get_timeline")
 ```
-
-## 3. Getting estimates for lots of users
-
-### Example users
-
-For example purposes, this vignette retrieves user IDs from accounts appearing
-on a Twitter list of 2020 Democratic presidential candidates.
-
-```{r, eval=FALSE}
-## get accounts from the twitter list: twitter.com/kearneymw/lists/dems-pres-2020
-d20 <- rtweet::lists_members(owner_user = "kearneymw", slug = "dems-pres-2020")
-
-## store IDs as 'users' vector
-users <- d20$user_id
-```
-
-### Making larger requests
-
-To get estimates for hundreds or thousands of users, it is wise to use a for-loop 
-and wait for the rate limit reset by sleeping between calls. This can be done in a number
-of ways, but the functions `chunk_users()` and `chunk_users_data()` are provided
-to make this easier. The code below should work for either user or bearer (rtweet)
-token. It also prints out rate limit information and percent complete information.
-
-```{r, eval=FALSE}
-## convert users vector (user IDs or screen names) a list of 10-user chunks
-users <- chunk_users(users, n = 10)
-
-## initialize output vector
-output <- vector("list", length(users))
-
-for (i in seq_along(output)) {
-  ## check rate limit- if < 10 calls remain, sleep until reset
-  print(rl <- rtweet::rate_limit(query = "get_timelines"))
-  while (rl[["remaining"]] < 10L) {
-    cat("Sleeping for", round(max(as.numeric(rl[["reset"]], "mins"), 0.5), 1), "minutes...")
-    Sys.sleep(max(as.numeric(rl[["reset"]], "secs"), 30))
-    rl <- rtweet::rate_limit(query = "get_timelines")
-  }
-  
-  ## get bot estimates
-  output[[i]] <- predict_bot(users[[i]])
-  
-  ## print iteration update
-  cat(sprintf("%d / %d (%.f%%)\n", i, length(output), i / length(output) * 100))
-}
-
-## merge into single data table
-output <- do.call("rbind", output)
-
-## sort by bot probability
-output[order(-prob_bot), ]
-```
-
-If you'd also like to keep the raw (timeline) Twitter data, the above for loop
-can be modified to collect the Twitter data prior to generating estimates with
-`predict_bot()`. This is demonstrated in the code below.
-
-```{r, eval=FALSE}
-## convert users vector (user IDs or screen names) a list of 10-user chunks
-users <- chunk_users(users, n = 10)
-
-## initialize output vectors
-output <- vector("list", length(users))
-usrtml <- vector("list", length(users))
-
-for (i in seq_along(output)) {
-  ## check rate limit- if < 10 calls remain, sleep until reset
-  print(rl <- rtweet::rate_limit(query = "get_timelines"))
-  while (rl[["remaining"]] < 10L) {
-    cat("Sleeping for", round(max(as.numeric(rl[["reset"]], "mins"), 0.5), 1), "minutes...")
-    Sys.sleep(max(as.numeric(rl[["reset"]], "secs"), 30))
-    rl <- rtweet::rate_limit(query = "get_timelines")
-  }
-  
-  ## get user timeline data (set check=FALSE to avoid excessive rate-limit calls)
-  usrtml[[i]] <- rtweet::get_timelines(users[[i]], n = 200, check = FALSE)
-  
-  ## use the timeline data to get bot estimates
-  output[[i]] <- predict_bot(users[[i]])
-  
-  ## print iteration update
-  cat(sprintf("%d / %d (%.f%%)\n", i, length(output), i / length(output) * 100))
-}
-
-## merge both data lists into single data tables
-output <- do.call("rbind", output)
-usrtml <- do.call("rbind", usrtml)
-
-## sort by bot probability
-output[order(-prob_bot), ]
-
-## preview timeline data
-usrtml[1:10, ]
-```
-
 
 <sup>1</sup> Unless you've already collected user timeline data, **[`{tweetbotornot2}`](tweetbotornot2.mikewk.com)** 
 relies on [`{rtweet}`](https://rtweet.info) to pull data from [Twitter's REST API](https://developer.twitter.com/en/docs).
