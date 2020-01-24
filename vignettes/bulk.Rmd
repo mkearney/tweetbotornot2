@@ -2,7 +2,7 @@
 title: "Getting estimates for lots of users"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{example}
+  %\VignetteIndexEntry{bulk}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
