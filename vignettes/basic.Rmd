@@ -1,8 +1,8 @@
 ---
-title: "Basic Use"
+title: "basic"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{basic-use}
+  %\VignetteIndexEntry{basic}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

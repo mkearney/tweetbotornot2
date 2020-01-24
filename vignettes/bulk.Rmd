@@ -1,8 +1,8 @@
 ---
-title: "Bulk use"
+title: "bulk"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{bulk-use}
+  %\VignetteIndexEntry{bulk}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
