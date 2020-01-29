@@ -35,7 +35,7 @@ version <- gsub('-', '.', version)
 [![fork this repo](https://githubbadges.com/fork.svg?user=mkearney&repo=tweetbotornot2&style=flat)](https://github.com/mkearney/tweetbotornot2/fork)
 [![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
 [![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg?style=flat-square)](commits/master)
-[![license](https://img.shields.io/badge/license-MIT + file LICENSE-lightgrey.svg)](https://choosealicense.com/)
+[![license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://choosealicense.com/)
 <!-- badges: end -->
 
 **`{tweetbotornot2}`** provides an out-of-the-box classifier for detecting Twitter
