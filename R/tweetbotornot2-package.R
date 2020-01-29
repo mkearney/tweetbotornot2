@@ -7,3 +7,5 @@
 ## usethis namespace: start
 ## usethis namespace: end
 NULL
+
+.twbt <- new.env(parent = emptyenv())

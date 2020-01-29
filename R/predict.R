@@ -64,9 +64,14 @@ predict_bot.data.frame <- function(x, batch_size = 100, ...) {
 
 #' @export
 predict_bot.data.table <- function(x, batch_size = 100, ...) {
-  if (!all(tweetbotornot_xgb_model$feature_names %in% names(x))) {
+  if (!all(tweetbotornot_xgb_model_feature_names %in% names(x))) {
     x <- preprocess_bot(x, batch_size = batch_size, ...)
   }
+  if (is.null(tweetbotornot_xgb_model <- .twbt[["tweetbotornot_xgb_model"]])) {
+    tweetbotornot_xgb_model <- xgboost::xgb.load(tweetbotornot_xgb_model_raw)
+    tweetbotornot_xgb_model$best_ntreelimit <- 3256
+  }
+
   og <- attr(x, ".ogusrs")
   if (sum(og %in% x$user_id, na.rm = TRUE) >
       sum(tolower(og) %in% tolower(x$screen_name), na.rm = TRUE)) {
@@ -98,8 +103,7 @@ predict_bot.data.table <- function(x, batch_size = 100, ...) {
     predmodel <- tweetbotornot_xgb_model
   }
 
-  p <- stats::predict(predmodel,
-    newdata = wactor::xgb_mat(x[, -(1:3)]))
+  p <- stats::predict(predmodel, as.matrix(x[, -(1:3)]))
   ogusrs$prob_bot <- p[match(ogusrs$user_id, x$user_id)]
   x <- x[match(ogusrs$user_id, x$user_id), ][!is.na(user_id), ]
   attr(ogusrs, "model_data") <- x

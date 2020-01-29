@@ -60,7 +60,7 @@ preprocess_bot.data.frame <- function(x, batch_size = 100, ...) {
 preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
   user_id <- NULL
   if (all(
-    tweetbotornot_xgb_model$feature_names %in% names(x)
+    tweetbotornot_xgb_model_feature_names %in% names(x)
   )) {
     return(x)
   }
