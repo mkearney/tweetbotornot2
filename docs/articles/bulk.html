@@ -132,7 +132,7 @@
 <span id="cb3-7"><a href="#cb3-7"></a></span>
 <span id="cb3-8"><a href="#cb3-8"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span>(output)) {</span>
 <span id="cb3-9"><a href="#cb3-9"></a>  <span class="co">## set oops counter</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>  oop &lt;-<span class="st"> </span>0L</span>
+<span id="cb3-10"><a href="#cb3-10"></a>  oops &lt;-<span class="st"> </span>0L</span>
 <span id="cb3-11"><a href="#cb3-11"></a></span>
 <span id="cb3-12"><a href="#cb3-12"></a>  <span class="co">## check rate limit- if &lt; 10 calls remain, sleep until reset</span></span>
 <span id="cb3-13"><a href="#cb3-13"></a>  <span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(rl &lt;-<span class="st"> </span>rtweet<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rtweet/man/rate_limit.html">rate_limit</a></span>(<span class="dt">query =</span> <span class="st">"get_timelines"</span>))</span>
@@ -169,7 +169,7 @@
 <span id="cb4-7"><a href="#cb4-7"></a></span>
 <span id="cb4-8"><a href="#cb4-8"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw"><a href="https://rdrr.io/r/base/seq.html">seq_along</a></span>(output)) {</span>
 <span id="cb4-9"><a href="#cb4-9"></a>  <span class="co">## set oops counter</span></span>
-<span id="cb4-10"><a href="#cb4-10"></a>  oop &lt;-<span class="st"> </span>0L</span>
+<span id="cb4-10"><a href="#cb4-10"></a>  oops &lt;-<span class="st"> </span>0L</span>
 <span id="cb4-11"><a href="#cb4-11"></a>  </span>
 <span id="cb4-12"><a href="#cb4-12"></a>  <span class="co">## check rate limit- if &lt; 10 calls remain, sleep until reset</span></span>
 <span id="cb4-13"><a href="#cb4-13"></a>  <span class="kw"><a href="https://rdrr.io/r/base/print.html">print</a></span>(rl &lt;-<span class="st"> </span>rtweet<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/rtweet/man/rate_limit.html">rate_limit</a></span>(<span class="dt">query =</span> <span class="st">"get_timelines"</span>))</span>

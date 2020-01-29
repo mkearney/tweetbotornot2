@@ -57,7 +57,7 @@ output <- vector("list", length(users))
 
 for (i in seq_along(output)) {
   ## set oops counter
-  oop <- 0L
+  oops <- 0L
 
   ## check rate limit- if < 10 calls remain, sleep until reset
   print(rl <- rtweet::rate_limit(query = "get_timelines"))
@@ -100,7 +100,7 @@ usrtml <- vector("list", length(users))
 
 for (i in seq_along(output)) {
   ## set oops counter
-  oop <- 0L
+  oops <- 0L
   
   ## check rate limit- if < 10 calls remain, sleep until reset
   print(rl <- rtweet::rate_limit(query = "get_timelines"))
