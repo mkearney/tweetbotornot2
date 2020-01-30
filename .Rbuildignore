@@ -14,3 +14,5 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.github/workflows/R-CMD-check\.yaml$
+^\.github/workflows/pkgdown\.yaml$
