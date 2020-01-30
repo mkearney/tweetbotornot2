@@ -1,0 +1,46 @@
+on:
+  push:
+    branches: master
+
+name: tweetit
+
+jobs:
+  rtweet:
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: r-lib/actions/setup-r@master
+      - name: Install dependencies
+        run: |
+          Rscript -e 'install.packages("remotes")' \
+                  -e 'remotes::install_deps(dependencies = TRUE)' \
+                  -e 'remotes::install_github("ropensci/rtweet@master")'
+      - name: Install package
+        run: R CMD INSTALL .
+      - name: Deploy package
+        run: |
+          if (!"TWITTER_PAT" %in% names(Sys.getenv())) {
+            token <- tryCatch(rtweet::create_token(
+              "rstats2twitter",
+              consumer_key = rtweet:::decript_key(),
+              consumer_secret = rtweet:::decript_secret(),
+              access_secret = rtweet:::rtweet_find_access_secret(),
+              access_token = rtweet:::rtweet_find_access_key(),
+              set_renv = FALSE
+            ),
+            error = function(e) NULL)
+          } else {
+            token <- readRDS(Sys.getenv("TWITTER_PAT"))
+          }
+          tml <- tryCatch(get_timeline("kearneymw", n = 1000, token = token),
+            error = function(e) data.frame())
+          if (NROW(tml) == 0) {
+            tml = tml[!tml$is_retweet, ]
+            l <- grepl("-tweetit", tml$text)
+            two_days_ago = Sys.time() - 60 * 60 * 24 * 2
+            if (sum(l) > 0 && all(tml$created_at[l] > two_days_ago)) {
+              rtweet:::post_tweet('I pushed an update to {tweetbotornot2}. Check it out: https://github.com/mkearney/tweetbotornot2 -tweetit', token = token)
+            }
+          }
+
+        shell: Rscript {0}
