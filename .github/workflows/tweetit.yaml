@@ -8,7 +8,7 @@ jobs:
   tweetit:
     runs-on: macOS-latest
     env:
-      - GITHUB_COMMIT_URL: https://github.com/${{ github.repository }}/commits/${{ github.sha }}
+      GITHUB_COMMIT_URL: https://github.com/${{ github.repository }}/commits/${{ github.sha }}
     steps:
       - uses: actions/checkout@master
       - uses: r-lib/actions/setup-r@v1
