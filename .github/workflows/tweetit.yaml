@@ -8,7 +8,7 @@ jobs:
   tweetit:
     runs-on: macOS-latest
     env:
-      - GITHUB_COMMIT_URL: https://github.com/${{ GITHUB_REPOSITORY }}/commits/${{ github.sha }}
+      - GITHUB_COMMIT_URL: https://github.com/${{ github.repository }}/commits/${{ github.sha }}
     steps:
       - uses: actions/checkout@master
       - uses: r-lib/actions/setup-r@v1
@@ -21,7 +21,7 @@ jobs:
                   -e 'saveRDS(any(grepl("-tweetit", rtweet::get_timeline("kearneymw", n = 20, token = readRDS(".rtweet_token.rds"))[["text"]])), "RECENT_TWEET_FOUND")'
       - name: TweetIt
         run: |
-          Rscript -e 'if (!readRDS("RECENT_TWEET_FOUND")) rtweet::post_tweet("I pushed a commit to ${{ GITHUB_REPOSITORY }}. Check it out: ${{ GITHUB_REPOSITORY_URL }} -tweetit", token = readRDS(".rtweet_token.rds")) else cat("ALREADY TWEETED RECENTLY")'
+          Rscript -e 'if (!readRDS("RECENT_TWEET_FOUND")) rtweet::post_tweet("I pushed a commit to ${{github.repository}}. Check it out: ${{GITHUB_REPOSITORY_URL}} -tweetit", token = readRDS(".rtweet_token.rds")) else cat("ALREADY TWEETED RECENTLY")'
       - name: Cleanup
         run: |
           Rscript -e 'unlink(c(".rtweet_token.rds", "RECENT_TWEET_FOUND"))'
