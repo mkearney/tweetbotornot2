@@ -15,10 +15,10 @@ jobs:
         run: |
           Rscript -e 'install.packages("remotes")' \
                   -e 'remotes::install_deps(dependencies = TRUE)' \
-                  -e 'remotes::install_github("jimhester/pkgdown@github-actions-deploy")'
+                  -e 'remotes::install_github("jimhester/pkgdown@master")'
       - name: Install package
         run: R CMD INSTALL .
-      - name: Deploy package
+      - name: Build docs
         run: |
-          pkgdown:::deploy_local(new_process = FALSE, remote_url = 'https://x-access-token:${{secrets.DEPLOY_PAT}}@github.com/${{github.repository}}.git')
+          pkgdown:::build_site(preview = FALSE)
         shell: Rscript {0}
