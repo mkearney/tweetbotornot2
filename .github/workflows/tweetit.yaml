@@ -6,6 +6,7 @@ name: TweetIt
 
 jobs:
   tweetit:
+    runs-on: macOS-latest
     steps:
       - uses: actions/checkout@master
       - uses: r-lib/actions/setup-r@v1
