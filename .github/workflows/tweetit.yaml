@@ -12,6 +12,6 @@ jobs:
         with:
           r-version: '3.6.1'
       - name: TweetIt
-      - run: |
+        run: |
           Rscript -e 'install.packages("rtweet")' \
                   -e 'rtweet::post_tweet("I pushed an update to {tweetbotornot2}. Check it out: https://github.com/mkearney/tweetbotornot2 -tweetit", token = rtweet::create_token("rstats2twitter", consumer_key = rtweet:::decript_key(), consumer_secret = rtweet:::decript_secret(), access_secret = "${{secrets.TWITTER_ACCESS_SECRET}", access_token = "${{secrets.TWITTER_ACCESS_TOKEN}"}, set_renv = FALSE))'
