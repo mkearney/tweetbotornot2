@@ -12,15 +12,8 @@ jobs:
       - uses: r-lib/actions/setup-r@v1
         with:
           r-version: '3.6.1'
-      - name: Setup rtweet
-        run: |
-          Rscript -e 'install.packages("rtweet")' \
-                  -e 'saveRDS(token = rtweet::create_token("rstats2twitter", consumer_key = rtweet:::decript_key(), consumer_secret = rtweet:::decript_secret(), access_secret = "${{secrets.TWITTER_ACCESS_SECRET}}", access_token = "${{secrets.TWITTER_ACCESS_TOKEN}}", set_renv = FALSE), ".rtweet_token.rds")' \
-                  -e 'saveRDS(any(grepl("-tweetit", rtweet::get_timeline("kearneymw", n = 20, token = readRDS(".rtweet_token.rds"))[["text"]])), "RECENT_TWEET_FOUND")'
       - name: TweetIt
         run: |
-          Rscript -e 'if (!readRDS("RECENT_TWEET_FOUND")) rtweet::post_tweet("I pushed a commit to ${{github.repository}}. Check it out: https://github.com/${{github.repository}}/commits/${{github.sha}} -tweetit", token = readRDS(".rtweet_token.rds")) else cat("ALREADY TWEETED RECENTLY")'
-      - name: Cleanup
-        run: |
-          Rscript -e 'unlink(c(".rtweet_token.rds", "RECENT_TWEET_FOUND"))'
+          Rscript -e 'install.packages("rtweet")' \
+                  -e '-e 'if (any(grepl("-tweetit", rtweet::get_timeline("kearneymw", n = 20, token = rtweet::create_token("rstats2twitter", consumer_key = rtweet:::decript_key(), consumer_secret = rtweet:::decript_secret(), access_secret = "${{secrets.TWITTER_ACCESS_SECRET}}", access_token = "${{secrets.TWITTER_ACCESS_TOKEN}}", set_renv = FALSE))[["text"]]))) cat("ALREADY TWEETED RECENTLY") else rtweet::post_tweet("I pushed a commit to ${{github.repository}}. Check it out: https://github.com/${{github.repository}}/commits/${{github.sha}} -tweetit", token = rtweet::create_token("rstats2twitter", consumer_key = rtweet:::decript_key(), consumer_secret = rtweet:::decript_secret(), access_secret = "${{secrets.TWITTER_ACCESS_SECRET}}", access_token = "${{secrets.TWITTER_ACCESS_TOKEN}}", set_renv = FALSE))'''
 
