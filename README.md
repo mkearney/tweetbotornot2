@@ -15,18 +15,19 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 coverage](https://codecov.io/gh/mkearney/tweetbotornot2/branch/master/graph/badge.svg)](https://codecov.io/gh/mkearney/tweetbotornot2?branch=master)
 [![AppVeyor build
 status](https://ci.appveyor.com/api/projects/status/github/mkearney/tweetbotornot2?branch=master&svg=true)](https://ci.appveyor.com/project/mkearney/tweetbotornot2)
-[![CRAN\_latest\_release\_date](https://www.r-pkg.org/badges/last-release/tweetbotornot2)](https://cran.r-project.org/package=tweetbotornot2)
-[![CRAN\_Status\_Badge\_version\_last\_release](https://www.r-pkg.org/badges/version-last-release/tweetbotornot2)](https://cran.r-project.org/package=tweetbotornot2)
-[![CRAN\_Status\_Badge\_version\_ago](https://www.r-pkg.org/badges/version-ago/tweetbotornot2)](https://cran.r-project.org/package=tweetbotornot2)
 [![metacran
 downloads](https://cranlogs.r-pkg.org/badges/tweetbotornot2)](https://cran.r-project.org/package=tweetbotornot2)
 [![star this
 repo](https://githubbadges.com/star.svg?user=mkearney&repo=tweetbotornot2&style=flat)](https://github.com/mkearney/tweetbotornot2)
 [![fork this
 repo](https://githubbadges.com/fork.svg?user=mkearney&repo=tweetbotornot2&style=flat)](https://github.com/mkearney/tweetbotornot2/fork)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--29-yellowgreen.svg)](/commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--30-yellowgreen.svg)](/commits/master)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.0.1-orange.svg?style=flat-square)](commits/master)
 [![license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://choosealicense.com/)
+[![R build
+status](https://github.com/mkearney/tweetbotornot2/workflows/R-CMD-check/badge.svg)](https://github.com/mkearney/tweetbotornot2)
+![Pkgdown](https://github.com/mkearney/tweetbotornot2/workflows/Pkgdown/badge.svg)
+![TweetIt](https://github.com/mkearney/tweetbotornot2/workflows/TweetIt/badge.svg)
 <!-- badges: end -->
 
 **`{tweetbotornot2}`** provides an out-of-the-box classifier for
