@@ -26,7 +26,6 @@ repo](https://githubbadges.com/fork.svg?user=mkearney&repo=tweetbotornot2&style=
 [![license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://choosealicense.com/)
 [![R build
 status](https://github.com/mkearney/tweetbotornot2/workflows/R-CMD-check/badge.svg)](https://github.com/mkearney/tweetbotornot2)
-![Pkgdown](https://github.com/mkearney/tweetbotornot2/workflows/Pkgdown/badge.svg)
 ![TweetIt](https://github.com/mkearney/tweetbotornot2/workflows/TweetIt/badge.svg)
 <!-- badges: end -->
 

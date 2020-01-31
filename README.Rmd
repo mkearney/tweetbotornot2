@@ -34,7 +34,6 @@ version <- gsub('-', '.', version)
 [![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg?style=flat-square)](commits/master)
 [![license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://choosealicense.com/)
 [![R build status](https://github.com/mkearney/tweetbotornot2/workflows/R-CMD-check/badge.svg)](https://github.com/mkearney/tweetbotornot2)
-![Pkgdown](https://github.com/mkearney/tweetbotornot2/workflows/Pkgdown/badge.svg)
 ![TweetIt](https://github.com/mkearney/tweetbotornot2/workflows/TweetIt/badge.svg)
 <!-- badges: end -->
 
