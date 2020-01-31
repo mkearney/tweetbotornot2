@@ -1,7 +1,8 @@
 test_that("predict_bot works", {
   skip_on_cran()
   token <- readRDS("twitter_tokens")
-  x <- predict_bot(c("twitter", "jack"), token = token)
+  key <- system("echo $BOTOMETER_KEY", intern = TRUE)
+  x <- predict_bot(c("twitter", "jack"), token = token, key = key)
   expect_true(is.data.frame(x))
   expect_true(inherits(x, "data.table"))
   expect_true(nrow(x) == 2)

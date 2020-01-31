@@ -30,6 +30,7 @@ jobs:
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       CRAN: ${{ matrix.config.cran }}
+      BOTOMETER_KEY: ${{ secrets.BOTOMETER_KEY }}
 
     steps:
       - uses: actions/checkout@v1
