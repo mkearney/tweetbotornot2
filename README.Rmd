@@ -17,6 +17,8 @@ options(width = 90, digits = 5, scipen = 6,
 library(tweetbotornot2)
 version <- as.vector(read.dcf('DESCRIPTION')[, 'Version'])
 version <- gsub('-', '.', version)
+tml <- rtweet::get_timeline("kearneymw", n = 100)
+status_id <- tml$status_id[grep("-tweetit", tml$text, ignore.case = TRUE)[1]]
 ```
 
 # tweetbotornot2 <img src="man/figures/logo.png" width="160px" align="right" />
@@ -34,7 +36,7 @@ version <- gsub('-', '.', version)
 [![packageversion](https://img.shields.io/badge/Package%20version-`r version`-orange.svg?style=flat-square)](commits/master)
 [![license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://choosealicense.com/)
 [![R build status](https://github.com/mkearney/tweetbotornot2/workflows/R-CMD-check/badge.svg)](https://github.com/mkearney/tweetbotornot2)
-![TweetIt](https://github.com/mkearney/tweetbotornot2/workflows/TweetIt/badge.svg)
+[![TweetIt](https://github.com/mkearney/tweetbotornot2/workflows/TweetIt/badge.svg)](`r paste0("https://twitter.com/kearneymw/status/", status_id)`)
 <!-- badges: end -->
 
 **`{tweetbotornot2}`** provides an out-of-the-box classifier for detecting Twitter
