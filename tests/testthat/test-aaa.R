@@ -20,7 +20,7 @@ test_that("create token", {
   x <- predict_bot(c("twitter", "jack"), token = token)
   expect_true(is.data.frame(x))
   expect_gt(nrow(x), 0)
-  saveRDS(token, "twitter_tokens")
+  saveRDS(token$clone(), "twitter_tokens")
   expect_true(file.exists("twitter_tokens"))
   requireNamespace("rtweet", quietly = TRUE)
 

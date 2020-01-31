@@ -20,7 +20,7 @@
 #'
 #' \dontrun{
 #' ## get botometer scores
-#' b <- predict_botometer(c("kearneymw", "netflix_bot"))
+#' b <- predict_botometer(c("kearneymw", "netflix_bot", "magicrealismbot", "PatrickMahomes"))
 #'
 #' ## get full information returned by botometer (as response objects)
 #' r <- predict_botometer(c("kearneymw", "netflix_bot"), parse = FALSE)
@@ -61,7 +61,18 @@ predict_botometer <- function(users,
   ## initialize output vector
   output <- vector("list", length(users))
 
+  ## progress bar
+  if (verbose) {
+    pb <- progress::progress_bar$new(
+      format = "  Downloading botometer scores [:bar] :percent",
+      clear = FALSE, total = length(users), width = 70)
+  }
+  ## loop through botometer requests
   for (i in seq_along(output)) {
+    ## print status
+    if (verbose) {
+      pb$tick()
+    }
     if (NROW(output[[i]]) == 0) {
       output[[i]] <- botometer_score(
         user      = users[i],
@@ -70,10 +81,6 @@ predict_botometer <- function(users,
         parse     = parse,
         user_type = user_type
       )
-    }
-    ## print status
-    if (verbose) {
-      cat("@", users[i], " (", i, "/", length(output), ")\n", sep = "")
     }
   }
 

@@ -41,7 +41,7 @@ Get Botometer scores for given user(s)
 
 \dontrun{
 ## get botometer scores
-b <- predict_botometer(c("kearneymw", "netflix_bot"))
+b <- predict_botometer(c("kearneymw", "netflix_bot", "magicrealismbot", "PatrickMahomes"))
 
 ## get full information returned by botometer (as response objects)
 r <- predict_botometer(c("kearneymw", "netflix_bot"), parse = FALSE)
