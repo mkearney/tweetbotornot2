@@ -9,5 +9,5 @@ jobs:
     - uses: actions/first-interaction@v1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: 'Thank you for creating an issue for {tweetbotornot}!'
+        issue-message: 'Thank you for creating an issue on {tweetbotornot}! I appreciate the feedback! It might be helpful supply example code via {reprex}, e.g.,\n\n\n``` r\nreprex::reprex({\n  #' ## Session\n  sessionInfo()\n  #' ## Token\n  rtweet::get_token()\n  #' ## Example\n  `INSERT ONE OR MORE LINES OF CODE ILLUSTRATING`\n  `THE PROBLEM OR PROVIDING AN EXAMPLE HERE`\n})\n```'
         pr-message: 'Thank you for creating pull request for {tweetbotornot}!'
