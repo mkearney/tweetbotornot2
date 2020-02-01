@@ -25,6 +25,18 @@
 #' @export
 preprocess_bot <- function(x, batch_size = 100, ...) UseMethod("preprocess_bot")
 
+
+#' @export
+preprocess_bot.default <- function(x, batch_size = 100, ...) {
+  if (length(x) == 0) {
+    return(data.table::data.table())
+  }
+  stopifnot(
+    is.character(x) || is.data.frame(x)
+  )
+  data.table::data.table()
+}
+
 #' @export
 preprocess_bot.character <- function(x, batch_size = 100, ...) {
   x <- unique(x[!is.na(x)])
@@ -67,7 +79,7 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
   if (any(c("user_id", "screen_name", "id_str") %in% names(x)) &&
       all(!c("text", "friends_count") %in% names(x))) {
     x <- pluck_users(x)
-    return(preprocess_bot(x, ...))
+    return(preprocess_bot(x, batch_size = batch_size, ...))
   }
   if (".ogusrs" %in% names(attributes(x))) {
     ogusrs <- attr(x, ".ogusrs")

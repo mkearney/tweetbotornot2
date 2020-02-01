@@ -5,7 +5,26 @@ prep_xgb_model <- function() {
 }
 
 get_secret <- function(x) {
-  system(paste0("echo $", sub("[^$]+(?=\\$)", "", x, perl = TRUE)), intern = TRUE)
+  if (Sys.which("echo") != "") {
+    cmd <- "echo"
+  } else {
+    cmd <- "cat"
+  }
+  if (.Platform$OS.type == "unix") {
+    x <- paste0("$", x)
+  } else {
+    x <- paste0("%", x, "%")
+  }
+  tryCatch(
+  {suppressWarnings(
+    system2(
+      cmd,
+      x,
+      stdout = TRUE,
+      stderr = NULL
+    )
+  )},
+    error = function(e) "")
 }
 
 create_token_from_secrets <- function() {
