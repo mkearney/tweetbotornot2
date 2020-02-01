@@ -5,26 +5,19 @@ prep_xgb_model <- function() {
 }
 
 get_secret <- function(x) {
-  if (Sys.which("echo") != "") {
-    cmd <- "echo"
-  } else {
-    cmd <- "cat"
+  if ((key <- Sys.getenv(x)) != "") {
+    return(key)
   }
-  if (.Platform$OS.type == "unix") {
-    x <- paste0("$", x)
+  if (grepl("(TOKEN|KEY)$", x)) {
+    x <- paste0(sub("_(KEY|PAT|TOKEN|SECRET)$", "", x), c("", "_KEY", "_PAT", "_TOKEN"))
   } else {
-    x <- paste0("%", x, "%")
+    x <- paste0(sub("_(KEY|PAT|TOKEN|SECRET)$", "", x), c("", "_KEY", "_PAT", "_SECRET"))
   }
-  tryCatch(
-  {suppressWarnings(
-    system2(
-      cmd,
-      x,
-      stdout = TRUE,
-      stderr = NULL
-    )
-  )},
-    error = function(e) "")
+  x <- Sys.getenv(x)
+  if (any(x != "")) {
+    return(x[x != ""][1])
+  }
+  ""
 }
 
 create_token_from_secrets <- function() {
@@ -35,9 +28,6 @@ create_token_from_secrets <- function() {
     return(readRDS(".rtweet_token.rds"))
   }
   access_token <- get_secret("TWITTER_ACCESS_TOKEN")
-  if (access_token == "") {
-    access_token <- get_secret("TWITTER_ACCESS_KEY")
-  }
   access_secret <- get_secret("TWITTER_ACCESS_SECRET")
   stopifnot(
     access_token != "",
