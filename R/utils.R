@@ -9,7 +9,10 @@ get_secret <- function(x) {
 }
 
 create_token_from_secrets <- function() {
-  access_token <- get_secret("TWITTER_ACCESS_KEY")
+  access_token <- get_secret("TWITTER_ACCESS_TOKEN")
+  if (access_token == "") {
+    access_token <- get_secret("TWITTER_ACCESS_KEY")
+  }
   access_secret <- get_secret("TWITTER_ACCESS_SECRET")
   stopifnot(
     access_token != "",
