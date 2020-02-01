@@ -191,7 +191,9 @@ botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
 
 botometer_key <- function(x = NULL, set_key = FALSE) {
   ## look for key if not supplied directly
-  x <- x %||% find_botometer_key()
+  if (is.null(x)) {
+    x <- find_botometer_key()
+  }
 
   ## if no key is found, stop with hyperlinked message
   if (is.null(x)) {
@@ -220,25 +222,20 @@ botometer_key <- function(x = NULL, set_key = FALSE) {
 }
 
 find_botometer_key <- function() {
-  ## (1) look for 'BOTOMETER_KEY' R environment variable
+  ## (1) look for 'BOTOMETER_KEY', 'BOTOMETER_PAT', or 'BOTOMETER' Renv vars
   is_env <- function(x) x != ""
   if (is_env(key <- Sys.getenv("BOTOMETER_KEY"))) {
     return(key)
   }
-
-  ## (2) look for similarly named (e.g., BOTOMETER or BOTOMETER_PAT)
-  envs <- Sys.getenv()
-  if (any(grepl("^botometer", names(envs), ignore.case = TRUE))) {
-    key <- envs[[grep("^botometer", names(envs), ignore.case = TRUE)[1]]]
+  if (is_env(key <- Sys.getenv("BOTOMETER_PAT"))) {
     return(key)
   }
-
-  ## (3) look for botomer key stored at system level
-  key <- c(
-    system("echo $BOTOMETER_KEY", intern = TRUE),
-    system("echo $BOTOMETER_PAT", intern = TRUE),
-    system("echo $BOTOMETER", intern = TRUE)
-  )
+  if (is_env(key <- Sys.getenv("BOTOMETER"))) {
+    return(key)
+  }
+  ## (3) look for botometer envars at system level
+  key <- dapr::vap_chr(
+    c("BOTOMETER_KEY", "BOTOMETER_PAT", "BOTOMETER"), get_secret)
   if (any(key != "")) {
     key <- key[key != ""][1]
     return(key)

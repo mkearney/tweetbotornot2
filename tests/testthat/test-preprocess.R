@@ -2,7 +2,7 @@ test_that("preprocess_bot works", {
   skip_on_cran()
 
   token <- tweetbotornot2:::create_token_from_secrets()
-  #token <- readRDS("twitter_tokens")
+
   x <- rtweet::get_timelines(c("twitter", "jack"), n = 200, check = FALSE, token = token)
   fake_user <- function(x) {
     x[["user_id"]] <- paste(sample(0:9, 14, replace = TRUE), collapse = "")

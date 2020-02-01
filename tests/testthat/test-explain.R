@@ -1,7 +1,6 @@
 test_that("explain_bot works", {
   skip_on_cran()
   token <- tweetbotornot2:::create_token_from_secrets()
-  #token <- readRDS("twitter_tokens")
   x <- explain_bot(c("twitter", "jack"), token = token)
   expect_true(is.data.frame(x))
   expect_true(inherits(x, "data.table"))

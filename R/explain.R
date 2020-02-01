@@ -28,6 +28,17 @@ explain_bot <- function(x, batch_size = 100, ...) {
 }
 
 #' @export
+explain_bot.default <- function(x, batch_size = 100, ...) {
+  if (length(x) == 0) {
+    data.table::data.table()
+  }
+  stopifnot(
+    is.character(x) || is.data.frame(x)
+  )
+  data.table::data.table()
+}
+
+#' @export
 explain_bot.character <- function(x, batch_size = 100, ...) {
   x <- predict_bot(x, batch_size = batch_size, ...)
   explain_bot(x)

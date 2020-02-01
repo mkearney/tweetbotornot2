@@ -9,22 +9,20 @@ get_secret <- function(x) {
 }
 
 create_token_from_secrets <- function() {
+  access_token <- get_secret("TWITTER_ACCESS_KEY")
+  access_secret <- get_secret("TWITTER_ACCESS_SECRET")
+  stopifnot(
+    access_token != "",
+    access_secret != ""
+  )
   rtweet::create_token(
     "rstats2twitter",
     consumer_key = consumer_key,
     consumer_secret = consumer_secret,
-    access_token = get_secret("TWITTER_ACCESS_KEY"),
-    access_secret = get_secret("TWITTER_ACCESS_SECRET"),
+    access_token = access_token,
+    access_secret = access_secret,
     set_renv = FALSE
-  )
-}
-
-`%||%` <- function(x, y) {
-  if (is_null(x)) {
-    y
-  } else {
-    x
-  }
+  )[["cache"]]()
 }
 
 in_years <- function(a, b) {
@@ -202,8 +200,6 @@ pluck_users <- function(x) {
 }
 
 get_model_data <- function(x) attr(x, "model_data")
-
-is_null <- is.null
 
 trim_string_outers <- function(x) {
   gsub("(^[ \t\r\n]{0,}(\"|')?)|((\"|')[ \t\r\n]{0,}$)", "", x)

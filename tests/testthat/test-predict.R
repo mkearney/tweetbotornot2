@@ -1,9 +1,8 @@
 test_that("predict_bot works", {
   skip_on_cran()
   token <- tweetbotornot2:::create_token_from_secrets()
-  #token <- readRDS("twitter_tokens")
-  key <- system("echo $BOTOMETER_KEY", intern = TRUE)
-  x <- predict_bot(c("twitter", "jack"), token = token, key = key)
+
+  x <- predict_bot(c("twitter", "jack"), token = token)
   expect_true(is.data.frame(x))
   expect_true(inherits(x, "data.table"))
   expect_true(nrow(x) == 2)
@@ -15,10 +14,10 @@ test_that("predict_bot works", {
   x <- c("netflix_bot", "aasfdiouyasdoifu", "madeupusernamethatiswrong",
     "a_quilt_bot", "jack", "SHAQ", "aasfdiouyasdoifu5", NA_character_,
     "madeupusernamethatiswrong", "a_quilt_bot")
-  p1 <- predict_bot(x)
+  p1 <- predict_bot(x, token = token)
   expect_equal(nrow(p1), 7)
 
-  p2 <- predict_bot_score(x)
+  p2 <- predict_bot_score(x, token = token)
   expect_true(
     is.numeric(p2)
   )
@@ -37,14 +36,14 @@ test_that("predict_bot works", {
   ))
 
 
-  x <- predict_bot(data.frame(user_id = c("1203840834", "2973406683")))
+  x <- predict_bot(data.frame(user_id = c("1203840834", "2973406683")), token = token)
   expect_true(is.data.frame(x))
   expect_true(inherits(x, "data.table"))
   expect_true(nrow(x) == 2)
   expect_equal(ncol(x), 3)
   expect_true(all(c("user_id", "screen_name", "prob_bot") %in% names(x)))
 
-  x <- predict_bot_score(data.frame(user_id = c("1203840834", "2973406683")))
+  x <- predict_bot_score(data.frame(user_id = c("1203840834", "2973406683")), token = token)
   expect_true(is.numeric(x))
   expect_equal(length(x), 2L)
 })

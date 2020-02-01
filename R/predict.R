@@ -105,6 +105,17 @@ predict_bot.data.table <- function(x, batch_size = 100, ...) {
   ogusrs
 }
 
+#' @export
+predict_bot.default <- function(x, batch_size = 100, ...) {
+  if (length(x) == 0) {
+    data.table::data.table()
+  }
+  stopifnot(
+    is.character(x) || is.data.frame(x)
+  )
+  data.table::data.table()
+}
+
 #' Predict bot score
 #'
 #' Returns numeric vector of bot probabilities matched to the input vector (or
