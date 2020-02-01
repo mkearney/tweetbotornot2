@@ -9,6 +9,12 @@ get_secret <- function(x) {
 }
 
 create_token_from_secrets <- function() {
+  if (file.exists("rtweet_token.rds")) {
+    return(readRDS("rtweet_token.rds"))
+  }
+  if (file.exists(".rtweet_token.rds")) {
+    return(readRDS(".rtweet_token.rds"))
+  }
   access_token <- get_secret("TWITTER_ACCESS_TOKEN")
   if (access_token == "") {
     access_token <- get_secret("TWITTER_ACCESS_KEY")

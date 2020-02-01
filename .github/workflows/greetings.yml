@@ -10,4 +10,4 @@ jobs:
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         issue-message: 'Thank you for creating an issue on {tweetbotornot}! I appreciate the feedback!'
-        pr-message: 'Thank you for creating pull request for {tweetbotornot}! I appreciate the contribution!'
+        pr-message: 'Thank you for creating a pull request for {tweetbotornot}! I appreciate the contribution!'
