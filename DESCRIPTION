@@ -22,7 +22,8 @@ Imports:
     xgboost (>= 0.90.0.1),
     progress (>= 1.2.0),
     RJSONIO (>= 1.3.1),
-    httr (>= 1.3.0)
+    httr (>= 1.3.0),
+    utils
 RoxygenNote: 7.0.2
 Suggests: 
     testthat (>= 2.1.0),

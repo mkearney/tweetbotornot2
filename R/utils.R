@@ -21,26 +21,15 @@ get_secret <- function(x) {
 }
 
 create_token_from_secrets <- function() {
-  if (file.exists("rtweet_token.rds")) {
-    return(readRDS("rtweet_token.rds"))
+  if (file.exists("rtweet_token.rds") &&
+      !isFALSE(x <- tryCatch(readRDS("rtweet_token.rds"), error = function(e) FALSE))) {
+    return(x)
   }
-  if (file.exists(".rtweet_token.rds")) {
-    return(readRDS(".rtweet_token.rds"))
+  if (file.exists("rtweet_token.rds") &&
+      !isFALSE(x <- tryCatch(readRDS("rtweet_token.rds"), error = function(e) FALSE))) {
+    return(x)
   }
-  access_token <- get_secret("TWITTER_ACCESS_TOKEN")
-  access_secret <- get_secret("TWITTER_ACCESS_SECRET")
-  stopifnot(
-    access_token != "",
-    access_secret != ""
-  )
-  rtweet::create_token(
-    "rstats2twitter",
-    consumer_key = consumer_key,
-    consumer_secret = consumer_secret,
-    access_token = access_token,
-    access_secret = access_secret,
-    set_renv = FALSE
-  )[["cache"]]()
+  rtweet_token()
 }
 
 in_years <- function(a, b) {
@@ -236,4 +225,74 @@ cleanup_users_string <- function(x) {
 
   ## return user(s)
   x
+}
+
+
+rtweet_token <- function(access_token = NULL, access_secret = NULL) {
+  if (is.null(access_token)) {
+    access_token <- unname(get_secret("TWITTER_ACCESS_TOKEN"))
+  }
+  if (is.null(access_secret)) {
+    access_secret <- unname(get_secret("TWITTER_ACCESS_SECRET"))
+  }
+  eval(parse(text = paste0('token <- list()
+  token$app <- list(appname = "rstats2twitter",
+    secret = tweetbotornot2:::consumer_secret,
+    key = tweetbotornot2:::consumer_key,
+    redirect_uri = httr::oauth_callback())
+  token$credentials <- list(oauth_token = "', access_token, '", oauth_token_secret = "', access_secret, '")
+  token$params <- list(as_header = TRUE)
+  token$endpoint <- list(
+    request = "https://api.twitter.com/oauth/request_token",
+    authorize = "https://api.twitter.com/oauth/authenticate",
+    access = "https://api.twitter.com/oauth/access_token"
+  )
+  token$sign <- function(method, url) {
+    oauth <- httr::oauth_signature(url, method,
+      list(appname = "rstats2twitter",
+        secret = tweetbotornot2:::consumer_secret,
+        key = tweetbotornot2:::consumer_key,
+        redirect_uri = httr::oauth_callback()),
+      "', access_token, '",
+      "', access_secret, '")
+    c(structure(list(url = url), class = "request"), httr::oauth_header(oauth))
+  }
+  token$clone <- function() structure(token, class = c("rtweet_token", "Token"))
+  structure(token, class = c("rtweet_token", "Token"))
+  ')))
+}
+
+#' @export
+print.rtweet_token <- function(x, ...) {
+  cat('[oauth_endpoint]\n')
+  cat('  request:  ', x$endpoint$request, '\n')
+  cat('  authorize:', x$endpoint$authorize, '\n')
+  cat('  access:   ', x$endpoint$access, '\n')
+
+  cat('[oauth_app]\n')
+  cat('  appname:  ', x$app$appname, '\n')
+  cat('  key:      ', x$app$key, '\n')
+  cat('[credentials]\n')
+  cat('  token:     <hidden>\n')
+  cat('  secret:    <hidden>\n')
+  cat("\n")
+}
+
+#' @export
+str.rtweet_token <- function(object, ...) {
+  x <- unclass(object)
+  x$app$secret <- "<hidden>"
+  x$credentials$oauth_token <- "<hidden>"
+  x$credentials$oauth_token_secret <- "<hidden>"
+  utils::str(x)
+}
+
+`$<-.rtweet_token` <- function(x, name, value = NULL) {
+  x <- unclass(x)
+  x[[name]] <- value
+  structure(x, c("rtweet_token", "token"))
+}
+
+`[.rtweet_token` <- function(x, name) {
+  get(name, envir = x)
 }
