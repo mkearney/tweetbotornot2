@@ -16,3 +16,9 @@ jobs:
         run: |
           Rscript -e 'install.packages("rtweet")' \
                   -e 'if (any(grepl("-tweetit", rtweet::get_timeline("kearneymw", n = 20, token = rtweet::create_token("rstats2twitter", consumer_key = rtweet:::decript_key(), consumer_secret = rtweet:::decript_secret(), access_secret = "${{secrets.TWITTER_ACCESS_SECRET}}", access_token = "${{secrets.TWITTER_ACCESS_TOKEN}}", set_renv = FALSE))[["text"]]))) cat("ALREADY TWEETED RECENTLY") else rtweet::post_tweet("I pushed a commit to ${{github.repository}}. Check it out: https://github.com/${{github.repository}}/commits/${{github.sha}} -tweetit", token = rtweet::create_token("rstats2twitter", consumer_key = rtweet:::decript_key(), consumer_secret = rtweet:::decript_secret(), access_secret = "${{secrets.TWITTER_ACCESS_SECRET}}", access_token = "${{secrets.TWITTER_ACCESS_TOKEN}}", set_renv = FALSE))'
+#        run: |
+#          Rscript -e 'install.packages("rtweet")' \
+#                  -e 'saveRDS(rtweet::create_token("rstats2twitter", consumer_key = rtweet:::decript_key(), consumer_secret = rtweet:::decript_secret(), access_secret = "${{secrets.TWITTER_ACCESS_SECRET}}", access_token = "${{secrets.TWITTER_ACCESS_TOKEN}}", set_renv = FALSE)$clone(), "rtweet_token.rds")' \
+#                  -e 'cat(any(grepl("-tweetit", rtweet::get_timeline("kearneymw", n = 40, token = readRDS("rtweet_token.rds"))[["text"]])), file = "tweeted_recently")' \
+#                  -e 'saveRDS(paste0("I updated ", sub(".*/", "", "${{github.repository}}"). Check it out: https://github.com/${{github.repository}}/commits/${{github.sha}} -rtweeted"), "tweet_text")' \
+#                  -e 'switch(readChar("tweeted_recently", 1), `T` = cat("\n##-----TWEETED RECENTLY-----##\n"), `F` = rtweet::post_tweet(readRDS("tweet_text"), token = readRDS("rtweet_token.rds")))'

@@ -1,6 +1,7 @@
 test_that("predict_bot works", {
   skip_on_cran()
-  token <- readRDS("twitter_tokens")
+  token <- tweetbotornot2:::create_token_from_secrets()
+  #token <- readRDS("twitter_tokens")
   key <- system("echo $BOTOMETER_KEY", intern = TRUE)
   x <- predict_bot(c("twitter", "jack"), token = token, key = key)
   expect_true(is.data.frame(x))

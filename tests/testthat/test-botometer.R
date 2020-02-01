@@ -1,6 +1,7 @@
 test_that("predict_botometer works", {
   skip_on_cran()
-  token <- readRDS("twitter_tokens")
+  token <- tweetbotornot2:::create_token_from_secrets()
+  #token <- readRDS("twitter_tokens")
   b <- predict_botometer(c("kearneymw", "jack", NA_character_, "kearneymw", "a2431sdfas1234dfasdfa"),
     token = token)
   expect_true(is.data.frame(b))

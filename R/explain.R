@@ -62,13 +62,9 @@ explain_bot.data.table <- function(x, batch_size = 100, ...) {
   p <- x[, prob_bot]
   x <- get_model_data(x)
   x[, prob_bot := p]
-  if (is.null(tweetbotornot_xgb_model <- .twbt[["tweetbotornot_xgb_model"]])) {
-    tweetbotornot_xgb_model <- xgboost::xgb.load(tweetbotornot_xgb_model_raw)
-    tweetbotornot_xgb_model$best_ntreelimit <- 3256
-  }
 
   pc <- stats::predict(
-    tweetbotornot_xgb_model,
+    prep_xgb_model(),
     as.matrix(x[, -c("user_id", "screen_name", "bot", "prob_bot")]),
     predcontrib = TRUE
   )

@@ -1,3 +1,24 @@
+prep_xgb_model <- function() {
+  tweetbotornot_xgb_model <- xgboost::xgb.load(tweetbotornot_xgb_model_raw)
+  tweetbotornot_xgb_model$best_ntreelimit <- tweetbotornot_xgb_model_best_ntreelimit
+  xgboost::xgb.Booster.complete(tweetbotornot_xgb_model)
+}
+
+get_secret <- function(x) {
+  system(paste0("echo $", sub("[^$]+(?=\\$)", "", x, perl = TRUE)), intern = TRUE)
+}
+
+create_token_from_secrets <- function() {
+  rtweet::create_token(
+    "rstats2twitter",
+    consumer_key = consumer_key,
+    consumer_secret = consumer_secret,
+    access_token = get_secret("TWITTER_ACCESS_KEY"),
+    access_secret = get_secret("TWITTER_ACCESS_SECRET"),
+    set_renv = FALSE
+  )
+}
+
 `%||%` <- function(x, y) {
   if (is_null(x)) {
     y
