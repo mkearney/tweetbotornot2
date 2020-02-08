@@ -88,10 +88,18 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
   }
   ## if no batches, process and return
   preprocess_bot_init(x)
+  if (!is.factor(x[, user_id])) {
+    x[, user_id := factor(user_id)]
+  }
   uid <- levels(x[, user_id])
 
   if (is.null(batch_size) || isFALSE(batch_size) || length(uid) <= batch_size) {
     x <- preprocess_bot_group(x)
+    if (!is_ids(ogusrs)) {
+      x <- x[match(tolower(ogusrs), tolower(x[, screen_name])), ]
+    } else {
+      x <- x[match(ogusrs, x[, user_id]), ]
+    }
     attr(x, ".ogusrs") <- ogusrs
     return(x)
   }
@@ -115,6 +123,11 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
   x <- do.call("rbind", x)
 
   ## put original users info back
+  if (!is_ids(ogusrs)) {
+    x <- x[match(tolower(ogusrs), tolower(x[, screen_name])), ]
+  } else {
+    x <- x[match(ogusrs, x[, user_id]), ]
+  }
   attr(x, ".ogusrs") <- ogusrs
 
   ## return
@@ -265,6 +278,28 @@ preprocess_bot_group <- function(data) {
   usr_actyr <- NULL
   tweets <- NULL
 
+  ##----------------------------------------------------------------------------##
+  ##                         DTIME (TIME BETWEEN TWEETS)                        ##
+  ##----------------------------------------------------------------------------##
+  ## create copy of timestamp info
+  m <- data.table::copy(data[, .(user_id, created_at)])
+  ## calculate time between tweets–sort from shortest to longest
+  m <- m[, .(dtime = c(NA_real_, abs(as.numeric(diff(created_at), "mins")))), by = user_id][
+    order(user_id, dtime), .(dtime, varname = paste0("dtime", seq_len(.N))), by = user_id]
+  ## create complete version of dtimes (with missing values)
+  mna <- data.table::data.table(user_id = unique(m[, user_id]))[, .(dtime = NA_real_, varname = paste0("dtime", 1:200)), by = user_id]
+  ## merge the two–removing duplicated rows from the NA dataset
+  m <- rbind(m, mna)[!duplicated(data.table::data.table(user_id, varname)), ]
+  ## convert from long to wide for each user
+  m <- m[, {
+    structure(
+      as.list(dtime),
+      names = varname,
+      class = c("data.table", "data.frame")
+    )
+  }, by = user_id]
+  m <- m[, -"dtime200"]
+
   ##--------------------------------------------------------------------------##
   ##                            GROUP BY USER_ID                              ##
   ##--------------------------------------------------------------------------##
@@ -336,6 +371,7 @@ preprocess_bot_group <- function(data) {
     ]
   data <- cbind(data[, -"usr_prfim"], model.matrix_(data[, .(usr_prfim)]))
   data[, user_id := as.character(user_id)]
+  data <- merge(data, m)
   data
 }
 

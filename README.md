@@ -21,12 +21,12 @@ downloads](https://cranlogs.r-pkg.org/badges/tweetbotornot2)](https://cran.r-pro
 repo](https://githubbadges.com/star.svg?user=mkearney&repo=tweetbotornot2&style=flat)](https://github.com/mkearney/tweetbotornot2)
 [![fork this
 repo](https://githubbadges.com/fork.svg?user=mkearney&repo=tweetbotornot2&style=flat)](https://github.com/mkearney/tweetbotornot2/fork)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2020--01--30-yellowgreen.svg)](/commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2020--02--08-yellowgreen.svg)](/commits/master)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.0.1-orange.svg?style=flat-square)](commits/master)
 [![license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://choosealicense.com/)
 [![R build
 status](https://github.com/mkearney/tweetbotornot2/workflows/R-CMD-check/badge.svg)](https://github.com/mkearney/tweetbotornot2)
-[![TweetIt](https://github.com/mkearney/tweetbotornot2/workflows/TweetIt/badge.svg)](https://twitter.com/kearneymw/status/1223034858852798464)
+[![TweetIt](https://github.com/mkearney/tweetbotornot2/workflows/TweetIt/badge.svg)](https://twitter.com/kearneymw/status/NA)
 <!-- badges: end -->
 
 **`{tweetbotornot2}`** provides an out-of-the-box classifier for
@@ -98,29 +98,29 @@ screen_names_df <- data.frame(screen_name = screen_names)
 
 ## vector -> bot estimates
 predict_bot(screen_names)
-#>                 user_id     screen_name prob_bot
-#>  1:  829792389925597184 American__Voter 0.977959
-#>  2:          3701125272 MagicRealismBot 0.978815
-#>  3:          1203840834     netflix_bot 0.977786
-#>  4:           214244836     mitchhedbot 0.976381
-#>  5: 1075011651366199297       rstats4ds 0.973262
-#>  6:          3325527710   thinkpiecebot 0.979082
-#>  7:  935569091678691328 tidyversetweets 0.979425
-#>  8:  780707721209188352     newstarsbot 0.979397
-#>  9:           233585808 CRANberriesFeed 0.977509
-#> 10:           138203134             AOC 0.023128
-#> 11:            25073877 realDonaldTrump 0.025439
-#> 12:            16017475   NateSilver538 0.023236
-#> 13:            16187637     ChadPergram 0.156712
-#> 14:            28406270         kumailn 0.022726
-#> 15:            23544596     mindykaling 0.023267
-#> 16:            24228154          hspter 0.023112
-#> 17:             9308212          rdpeng 0.027991
-#> 18:          2973406683       kearneymw 0.085832
-#> 19:            93476253        dfreelon 0.022853
-#> 20:            19520842        AmeliaMN 0.034878
-#> 21:          1098742782   winston_chang 0.023383
-#>                 user_id     screen_name prob_bot
+#>                 user_id     screen_name   prob_bot
+#>  1:  829792389925597184 American__Voter 0.99923730
+#>  2:          3701125272 MagicRealismBot 0.99886143
+#>  3:          1203840834     netflix_bot 0.85550964
+#>  4:           214244836     mitchhedbot 0.99847370
+#>  5: 1075011651366199297       rstats4ds 0.99878043
+#>  6:          3325527710   thinkpiecebot 0.99953938
+#>  7:  935569091678691328 tidyversetweets 0.99963319
+#>  8:  780707721209188352     newstarsbot 0.99973100
+#>  9:           233585808 CRANberriesFeed 0.99852484
+#> 10:           138203134             AOC 0.00082178
+#> 11:            25073877 realDonaldTrump 0.00126745
+#> 12:            16017475   NateSilver538 0.00203745
+#> 13:            16187637     ChadPergram 0.00385066
+#> 14:            28406270         kumailn 0.00056573
+#> 15:            23544596     mindykaling 0.00087570
+#> 16:            24228154          hspter 0.00045269
+#> 17:             9308212          rdpeng 0.00398646
+#> 18:          2973406683       kearneymw 0.01408189
+#> 19:            93476253        dfreelon 0.00055131
+#> 20:            19520842        AmeliaMN 0.00769005
+#> 21:          1098742782   winston_chang 0.00111468
+#>                 user_id     screen_name   prob_bot
 
 ## data.frame -> bot estimates
 #predict_bot(screen_names_df)
@@ -152,29 +152,29 @@ twtdat <- rtweet::get_timelines(screen_names, n = 200, check = FALSE)
 
 ## generate predictions from twitter data frame
 predict_bot(twtdat)
-#>                 user_id     screen_name prob_bot
-#>  1:  829792389925597184 American__Voter 0.977959
-#>  2:          3701125272 MagicRealismBot 0.978815
-#>  3:          1203840834     netflix_bot 0.977786
-#>  4:           214244836     mitchhedbot 0.976381
-#>  5: 1075011651366199297       rstats4ds 0.973262
-#>  6:          3325527710   thinkpiecebot 0.979082
-#>  7:  935569091678691328 tidyversetweets 0.979425
-#>  8:  780707721209188352     newstarsbot 0.979397
-#>  9:           233585808 CRANberriesFeed 0.977509
-#> 10:           138203134             AOC 0.023128
-#> 11:            25073877 realDonaldTrump 0.025439
-#> 12:            16017475   NateSilver538 0.023236
-#> 13:            16187637     ChadPergram 0.156712
-#> 14:            28406270         kumailn 0.022726
-#> 15:            23544596     mindykaling 0.023267
-#> 16:            24228154          hspter 0.023112
-#> 17:             9308212          rdpeng 0.027991
-#> 18:          2973406683       kearneymw 0.085832
-#> 19:            93476253        dfreelon 0.022853
-#> 20:            19520842        AmeliaMN 0.034878
-#> 21:          1098742782   winston_chang 0.023383
-#>                 user_id     screen_name prob_bot
+#>                 user_id     screen_name   prob_bot
+#>  1:  829792389925597184 American__Voter 0.99923730
+#>  2:          3701125272 MagicRealismBot 0.99886143
+#>  3:          1203840834     netflix_bot 0.85550964
+#>  4:           214244836     mitchhedbot 0.99847370
+#>  5: 1075011651366199297       rstats4ds 0.99878043
+#>  6:          3325527710   thinkpiecebot 0.99953938
+#>  7:  935569091678691328 tidyversetweets 0.99963319
+#>  8:  780707721209188352     newstarsbot 0.99973100
+#>  9:           233585808 CRANberriesFeed 0.99852484
+#> 10:           138203134             AOC 0.00082178
+#> 11:            25073877 realDonaldTrump 0.00126745
+#> 12:            16017475   NateSilver538 0.00203745
+#> 13:            16187637     ChadPergram 0.00385066
+#> 14:            28406270         kumailn 0.00056573
+#> 15:            23544596     mindykaling 0.00087570
+#> 16:            24228154          hspter 0.00045269
+#> 17:             9308212          rdpeng 0.00398646
+#> 18:          2973406683       kearneymw 0.01408189
+#> 19:            93476253        dfreelon 0.00055131
+#> 20:            19520842        AmeliaMN 0.00769005
+#> 21:          1098742782   winston_chang 0.00111468
+#>                 user_id     screen_name   prob_bot
 ```
 
 ## Explain
@@ -191,58 +191,58 @@ explain_bot(twtdat)[
   -abs(value)), ][
     feature %in% feature[1:5],
     .SD, on = "feature" ][1:50, -1]
-#>         screen_name prob_bot   feature    value                feature_description
-#>  1:             AOC 0.023128 twt_srctw -1.83081 Tweet source of Twitter (official)
-#>  2:             AOC 0.023128 twt_rtwts -0.53856                 Tweet via retweets
-#>  3:             AOC 0.023128 twt_atssd -0.32375           Tweet mentions variation
-#>  4:             AOC 0.023128 twt_srcna -0.25603            Tweet source of unknown
-#>  5:             AOC 0.023128 usr_actyr -0.17836                   User account age
-#>  6:        AmeliaMN 0.034878 twt_srctw -1.45934 Tweet source of Twitter (official)
-#>  7:        AmeliaMN 0.034878 twt_rtwts -0.45133                 Tweet via retweets
-#>  8:        AmeliaMN 0.034878 twt_atssd -0.28902           Tweet mentions variation
-#>  9:        AmeliaMN 0.034878 twt_srcna -0.26199            Tweet source of unknown
-#> 10:        AmeliaMN 0.034878 usr_actyr -0.24588                   User account age
-#> 11: American__Voter 0.977959 twt_srctw  1.67030 Tweet source of Twitter (official)
-#> 12: American__Voter 0.977959 twt_srcna  0.61260            Tweet source of unknown
-#> 13: American__Voter 0.977959 twt_rtwts  0.40703                 Tweet via retweets
-#> 14: American__Voter 0.977959 usr_actyr  0.24541                   User account age
-#> 15: American__Voter 0.977959 twt_atssd  0.23731           Tweet mentions variation
-#> 16: CRANberriesFeed 0.977509 twt_srctw  1.77730 Tweet source of Twitter (official)
-#> 17: CRANberriesFeed 0.977509 twt_srcna  0.56992            Tweet source of unknown
-#> 18: CRANberriesFeed 0.977509 twt_rtwts  0.44298                 Tweet via retweets
-#> 19: CRANberriesFeed 0.977509 twt_atssd  0.25138           Tweet mentions variation
-#> 20: CRANberriesFeed 0.977509 usr_actyr -0.10201                   User account age
-#> 21:     ChadPergram 0.156712 twt_srctw -1.83662 Tweet source of Twitter (official)
-#> 22:     ChadPergram 0.156712 twt_rtwts  0.56250                 Tweet via retweets
-#> 23:     ChadPergram 0.156712 usr_actyr -0.54926                   User account age
-#> 24:     ChadPergram 0.156712 twt_atssd  0.37709           Tweet mentions variation
-#> 25:     ChadPergram 0.156712 twt_srcna -0.23239            Tweet source of unknown
-#> 26: MagicRealismBot 0.978815 twt_srctw  1.68574 Tweet source of Twitter (official)
-#> 27: MagicRealismBot 0.978815 twt_srcna  0.56208            Tweet source of unknown
-#> 28: MagicRealismBot 0.978815 twt_rtwts  0.44869                 Tweet via retweets
-#> 29: MagicRealismBot 0.978815 twt_atssd  0.24527           Tweet mentions variation
-#> 30: MagicRealismBot 0.978815 usr_actyr  0.22692                   User account age
-#> 31:   NateSilver538 0.023236 twt_srctw -1.83452 Tweet source of Twitter (official)
-#> 32:   NateSilver538 0.023236 twt_rtwts -0.47074                 Tweet via retweets
-#> 33:   NateSilver538 0.023236 twt_atssd -0.29395           Tweet mentions variation
-#> 34:   NateSilver538 0.023236 twt_srcna -0.25568            Tweet source of unknown
-#> 35:   NateSilver538 0.023236 usr_actyr -0.19043                   User account age
-#> 36:        dfreelon 0.022853 twt_srctw -1.82128 Tweet source of Twitter (official)
-#> 37:        dfreelon 0.022853 twt_rtwts -0.45475                 Tweet via retweets
-#> 38:        dfreelon 0.022853 twt_atssd -0.27507           Tweet mentions variation
-#> 39:        dfreelon 0.022853 twt_srcna -0.23698            Tweet source of unknown
-#> 40:        dfreelon 0.022853 usr_actyr -0.19044                   User account age
-#> 41:          hspter 0.023112 twt_srctw -1.83156 Tweet source of Twitter (official)
-#> 42:          hspter 0.023112 twt_rtwts -0.50467                 Tweet via retweets
-#> 43:          hspter 0.023112 twt_atssd -0.31146           Tweet mentions variation
-#> 44:          hspter 0.023112 twt_srcna -0.25075            Tweet source of unknown
-#> 45:          hspter 0.023112 usr_actyr -0.19727                   User account age
-#> 46:       kearneymw 0.085832 twt_srctw -1.61315 Tweet source of Twitter (official)
-#> 47:       kearneymw 0.085832 twt_rtwts -0.49999                 Tweet via retweets
-#> 48:       kearneymw 0.085832 usr_actyr  0.40818                   User account age
-#> 49:       kearneymw 0.085832 twt_atssd -0.34109           Tweet mentions variation
-#> 50:       kearneymw 0.085832 twt_srcna  0.25728            Tweet source of unknown
-#>         screen_name prob_bot   feature    value                feature_description
+#>         screen_name   prob_bot   feature     value                feature_description
+#>  1:             AOC 0.00082178 twt_srctw -4.074586 Tweet source of Twitter (official)
+#>  2:             AOC 0.00082178 twt_srcna -0.788900            Tweet source of unknown
+#>  3:             AOC 0.00082178 usr_fllws -0.539794                     User followers
+#>  4:             AOC 0.00082178 twt_rtwts -0.453744                 Tweet via retweets
+#>  5:             AOC 0.00082178 twt_quots -0.276252                   Tweet via quotes
+#>  6:        AmeliaMN 0.00769005 twt_srctw -2.392487 Tweet source of Twitter (official)
+#>  7:        AmeliaMN 0.00769005 twt_srcna -0.716127            Tweet source of unknown
+#>  8:        AmeliaMN 0.00769005 twt_rtwts -0.461190                 Tweet via retweets
+#>  9:        AmeliaMN 0.00769005 twt_quots -0.308175                   Tweet via quotes
+#> 10:        AmeliaMN 0.00769005 usr_fllws  0.050839                     User followers
+#> 11: American__Voter 0.99923730 twt_srctw  2.053514 Tweet source of Twitter (official)
+#> 12: American__Voter 0.99923730 twt_srcna  1.149764            Tweet source of unknown
+#> 13: American__Voter 0.99923730 twt_rtwts  0.357076                 Tweet via retweets
+#> 14: American__Voter 0.99923730 usr_fllws  0.113606                     User followers
+#> 15: American__Voter 0.99923730 twt_quots  0.020683                   Tweet via quotes
+#> 16: CRANberriesFeed 0.99852484 twt_srctw  2.343053 Tweet source of Twitter (official)
+#> 17: CRANberriesFeed 0.99852484 twt_srcna  1.026885            Tweet source of unknown
+#> 18: CRANberriesFeed 0.99852484 twt_rtwts  0.340709                 Tweet via retweets
+#> 19: CRANberriesFeed 0.99852484 usr_fllws  0.081496                     User followers
+#> 20: CRANberriesFeed 0.99852484 twt_quots  0.009263                   Tweet via quotes
+#> 21:     ChadPergram 0.00385066 twt_srctw -4.741660 Tweet source of Twitter (official)
+#> 22:     ChadPergram 0.00385066 twt_srcna -0.573186            Tweet source of unknown
+#> 23:     ChadPergram 0.00385066 twt_rtwts  0.470594                 Tweet via retweets
+#> 24:     ChadPergram 0.00385066 usr_fllws -0.271190                     User followers
+#> 25:     ChadPergram 0.00385066 twt_quots  0.016482                   Tweet via quotes
+#> 26: MagicRealismBot 0.99886143 twt_srctw  2.114994 Tweet source of Twitter (official)
+#> 27: MagicRealismBot 0.99886143 twt_srcna  1.112244            Tweet source of unknown
+#> 28: MagicRealismBot 0.99886143 usr_fllws -0.596811                     User followers
+#> 29: MagicRealismBot 0.99886143 twt_rtwts  0.321603                 Tweet via retweets
+#> 30: MagicRealismBot 0.99886143 twt_quots  0.022025                   Tweet via quotes
+#> 31:   NateSilver538 0.00203745 twt_srctw -4.399889 Tweet source of Twitter (official)
+#> 32:   NateSilver538 0.00203745 twt_srcna -0.731548            Tweet source of unknown
+#> 33:   NateSilver538 0.00203745 usr_fllws -0.447941                     User followers
+#> 34:   NateSilver538 0.00203745 twt_rtwts -0.382454                 Tweet via retweets
+#> 35:   NateSilver538 0.00203745 twt_quots -0.219549                   Tweet via quotes
+#> 36:        dfreelon 0.00055131 twt_srctw -3.501392 Tweet source of Twitter (official)
+#> 37:        dfreelon 0.00055131 twt_srcna -0.646322            Tweet source of unknown
+#> 38:        dfreelon 0.00055131 twt_rtwts -0.326476                 Tweet via retweets
+#> 39:        dfreelon 0.00055131 twt_quots -0.206744                   Tweet via quotes
+#> 40:        dfreelon 0.00055131 usr_fllws  0.081107                     User followers
+#> 41:          hspter 0.00045269 twt_srctw -3.975683 Tweet source of Twitter (official)
+#> 42:          hspter 0.00045269 twt_srcna -0.619192            Tweet source of unknown
+#> 43:          hspter 0.00045269 twt_rtwts -0.461670                 Tweet via retweets
+#> 44:          hspter 0.00045269 twt_quots -0.214055                   Tweet via quotes
+#> 45:          hspter 0.00045269 usr_fllws -0.017264                     User followers
+#> 46:       kearneymw 0.01408189 twt_srctw -3.183783 Tweet source of Twitter (official)
+#> 47:       kearneymw 0.01408189 twt_rtwts -0.593300                 Tweet via retweets
+#> 48:       kearneymw 0.01408189 twt_quots -0.346904                   Tweet via quotes
+#> 49:       kearneymw 0.01408189 twt_srcna -0.163475            Tweet source of unknown
+#> 50:       kearneymw 0.01408189 usr_fllws  0.043551                     User followers
+#>         screen_name   prob_bot   feature     value                feature_description
 ```
 
 ## Rate limits
@@ -259,16 +259,16 @@ requires only one call to Twitter’s API, so it’s possible to get up to
 ## view bearer token rate limit for users/timeline endpoint
 rtweet::rate_limit(rtweet::bearer_token(), "get_timeline")
 #> # A tibble: 1 x 6
-#>   query                  limit remaining reset   reset_at            timestamp          
-#>   <chr>                  <int>     <int> <drtn>  <dttm>              <dttm>             
-#> 1 statuses/user_timeline  1500      1500 15 mins 2020-01-24 15:56:55 2020-01-24 15:41:56
+#>   query                 limit remaining reset      reset_at            timestamp          
+#>   <chr>                 <int>     <int> <drtn>     <dttm>              <dttm>             
+#> 1 statuses/user_timeli…  1500      1500 15.002 mi… 2020-02-08 12:27:17 2020-02-08 12:12:17
 
 ## view user token rate limit for users/timeline endpoint
 rtweet::rate_limit(rtweet::get_token(), "get_timeline")
 #> # A tibble: 1 x 7
 #>   query             limit remaining reset    reset_at            timestamp           app  
 #>   <chr>             <int>     <int> <drtn>   <dttm>              <dttm>              <chr>
-#> 1 statuses/user_ti…   900       814 13.063 … 2020-01-24 15:54:59 2020-01-24 15:41:56 ""
+#> 1 statuses/user_ti…   900       736 3.9645 … 2020-02-08 12:16:15 2020-02-08 12:12:18 ""
 ```
 
 ## About Model
@@ -292,11 +292,9 @@ How features contributed to predictions in the original training data:
 ``` r
 ## get botometer scores
 predict_botometer(c('kearneymw', 'netflix_bot'))
-#> @kearneymw (1/2)
-#> @netflix_bot (2/2)
 #>       user_id screen_name botometer_english botometer_universal
-#> 1: 2973406683   kearneymw          0.027678            0.088995
-#> 2: 1203840834 netflix_bot          0.590513            0.515643
+#> 1: 2973406683   kearneymw          0.038503            0.070893
+#> 2: 1203840834 netflix_bot          0.569732            0.556587
 ```
 
 ### Botometer vs tweetbotornot2

@@ -15,7 +15,7 @@ test_that("predict_bot works", {
     "a_quilt_bot", "jack", "SHAQ", "aasfdiouyasdoifu5", NA_character_,
     "madeupusernamethatiswrong", "a_quilt_bot")
   p1 <- predict_bot(x, token = token)
-  expect_equal(nrow(p1), 7)
+  expect_equal(nrow(p1), 7L)
 
   p2 <- predict_bot_score(x, token = token)
   expect_true(
