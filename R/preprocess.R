@@ -96,6 +96,7 @@ preprocess_bot.data.table <- function(x, batch_size = 100, ...) {
   if (is.null(batch_size) || isFALSE(batch_size) || length(uid) <= batch_size) {
     x <- preprocess_bot_group(x)
     if (!is_ids(ogusrs)) {
+      screen_name <- NULL
       x <- x[match(tolower(ogusrs), tolower(x[, screen_name])), ]
     } else {
       x <- x[match(ogusrs, x[, user_id]), ]
@@ -278,6 +279,9 @@ preprocess_bot_group <- function(data) {
   usr_actyr <- NULL
   tweets <- NULL
 
+  dtime <- NULL
+  varname <- NULL
+
   ##----------------------------------------------------------------------------##
   ##                         DTIME (TIME BETWEEN TWEETS)                        ##
   ##----------------------------------------------------------------------------##
@@ -287,7 +291,8 @@ preprocess_bot_group <- function(data) {
   m <- m[, .(dtime = c(NA_real_, abs(as.numeric(diff(created_at), "mins")))), by = user_id][
     order(user_id, dtime), .(dtime, varname = paste0("dtime", seq_len(.N))), by = user_id]
   ## create complete version of dtimes (with missing values)
-  mna <- data.table::data.table(user_id = unique(m[, user_id]))[, .(dtime = NA_real_, varname = paste0("dtime", 1:200)), by = user_id]
+  mna <- data.table::data.table(user_id = unique(m[, user_id]))[,
+    .(dtime = NA_real_, varname = paste0("dtime", 1:200)), by = user_id]
   ## merge the two–removing duplicated rows from the NA dataset
   m <- rbind(m, mna)[!duplicated(data.table::data.table(user_id, varname)), ]
   ## convert from long to wide for each user

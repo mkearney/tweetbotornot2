@@ -176,11 +176,14 @@ The most influential features in the classifier
 
 ```{r, include=FALSE, eval=FALSE}
 # idsbot <- c("user_id", "screen_name", "bot")
+# mod <- tweetbotornot2:::prep_xgb_model()
+# mod$feature_names <- tweetbotornot2:::tweetbotornot_xgb_model_feature_names
 # xgboost::xgb.ggplot.importance(xgboost::xgb.importance(
-#   model = tweetbotornot2:::tweetbotornot_xgb_model,
-#   trees = 1:1000), measure = "Gain", top_n = 28) +
+#   model = mod,
+#   trees = seq_len(tweetbotornot2:::tweetbotornot_xgb_model_best_ntreelimit)),
+#   measure = "Gain", top_n = 20) +
 #   ggplot2::scale_fill_viridis_d(begin= 0.05, end = 0.9) +
-#   dataviz::theme_mwk(12, "Avenir Next LT Pro") +
+#   dataviz::theme_mwk(14) +
 #   #ggplot2::coord_cartesian(ylim = c(0, 0.3)) +
 #   #ggplot2::coord_flip(ylim = c(0, .12)) +
 #   ggplot2::ggsave("man/figures/README-import.png", width = 9, height = 8,
@@ -195,6 +198,8 @@ How features contributed to predictions in the original training data:
 
 ```{r, include=FALSE, eval=FALSE}
 # .d <- tfse::read_RDS("../twbt/data-final-munged.rds")
+# mod <- tweetbotornot2:::prep_xgb_model()
+# mod$feature_names <- tweetbotornot2:::tweetbotornot_xgb_model_feature_names
 # 
 # png("man/figures/README-shap.png", width = 9, height = 8, units = "in", res = 312)
 # par(tcl = -0.175, bty = "n", xaxt = "s", yaxt = "s", col = "#aaaaaa")
@@ -202,8 +207,8 @@ How features contributed to predictions in the original training data:
 # suppressWarnings(
 #   xgboost::xgb.plot.shap(
 #     data = as.matrix(.d[, -(1:3)]),
-#     trees = 1:150,
-#     model = tweetbotornot2:::tweetbotornot_xgb_model,
+#     trees = seq_len(mod$best_ntreelimit),
+#     model = mod,
 #     top_n = 36, n_col = 6,
 #     discrete_jitter = 0.15, span_loess = 0.35, col_loess = cols[1],
 #     col = cols[2],
