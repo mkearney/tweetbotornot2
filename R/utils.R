@@ -4,20 +4,34 @@ prep_xgb_model <- function() {
   xgboost::xgb.Booster.complete(tweetbotornot_xgb_model)
 }
 
-get_secret <- function(x) {
+get_secret <- function(x, ...) {
+  stopifnot(
+    is.character(x),
+    length(x) == 1L
+  )
   if ((key <- Sys.getenv(x)) != "") {
     return(key)
   }
-  if (grepl("(TOKEN|KEY)$", x)) {
-    x <- paste0(sub("_(KEY|PAT|TOKEN|SECRET)$", "", x), c("", "_KEY", "_PAT", "_TOKEN"))
-  } else {
-    x <- paste0(sub("_(KEY|PAT|TOKEN|SECRET)$", "", x), c("", "_KEY", "_PAT", "_SECRET"))
+  e <- Sys.getenv()
+  x <- grep(x, names(e), ..., value = TRUE)
+  if (length(x) == 0) {
+    return("")
   }
-  x <- Sys.getenv(x)
-  if (any(x != "")) {
-    return(x[x != ""][1])
+  if (length(x) > 1L) {
+    warning("Found multiple environment variables")
+    x <- x[1]
   }
-  ""
+  Sys.getenv(x)
+}
+
+check_token_or_create_from_access_keys <- function(token = NULL) {
+  if (!is.null(token)) {
+    return(token)
+  }
+  if (eval(parse(text = 'exists("twitter_tokens", envir = rtweet:::.state)'))) {
+    return(token)
+  }
+  create_token_from_secrets()
 }
 
 create_token_from_secrets <- function() {
@@ -25,8 +39,17 @@ create_token_from_secrets <- function() {
       !isFALSE(x <- tryCatch(readRDS("rtweet_token.rds"), error = function(e) FALSE))) {
     return(x)
   }
-  if (file.exists("rtweet_token.rds") &&
-      !isFALSE(x <- tryCatch(readRDS("rtweet_token.rds"), error = function(e) FALSE))) {
+  if (file.exists(".rtweet_token.rds") &&
+      !isFALSE(x <- tryCatch(readRDS(".rtweet_token.rds"), error = function(e) FALSE))) {
+    return(x)
+  }
+  home <- normalizePath("~")
+  if (file.exists(file.path(home, ".rtweet_token.rds")) &&
+      !isFALSE(x <- tryCatch(readRDS(file.path(home, ".rtweet_token.rds")), error = function(e) FALSE))) {
+    return(x)
+  }
+  if (file.exists(file.path(home, "rtweet_token.rds")) &&
+      !isFALSE(x <- tryCatch(readRDS(file.path(home, "rtweet_token.rds")), error = function(e) FALSE))) {
     return(x)
   }
   rtweet_token()
@@ -230,7 +253,7 @@ cleanup_users_string <- function(x) {
 
 rtweet_token <- function(access_token = NULL, access_secret = NULL) {
   if (is.null(access_token)) {
-    access_token <- unname(get_secret("TWITTER_ACCESS_TOKEN"))
+    access_token <- unname(get_secret("TWITTER_ACCESS_(TOKEN|KEY)"))
   }
   if (is.null(access_secret)) {
     access_secret <- unname(get_secret("TWITTER_ACCESS_SECRET"))

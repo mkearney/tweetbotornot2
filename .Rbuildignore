@@ -17,3 +17,6 @@
 ^\.github/workflows/pkgdown\.yaml$
 ^\.github$
 ^\.github/workflows/R-CMD-check\.yaml$
+^tweetbotornot2\.Rcheck$
+^tweetbotornot2.*\.tar\.gz$
+^tweetbotornot2.*\.tgz$
