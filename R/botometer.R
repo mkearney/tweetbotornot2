@@ -8,7 +8,7 @@
 #' @param token rtweet token. If NULL (default), then rtweet looks for a token
 #'   path in .Renviron
 #' @param key Botometer API key, which you should be able to get from:
-#'   https://rapidapi.com/OSoMe/api/botometer/details
+#'   https://rapidapi.com/OSoMe/api/botometer-pro
 #' @param set_key Logical indicating whether to set the botometer key as an
 #'   R environment variable for current future sessions (on the same machine).
 #' @param parse Logical indicating whether to parse return information. If TRUE
@@ -162,7 +162,7 @@ botometer_score <- function(user, token, key, parse = TRUE, user_type = NULL) {
   ), auto_unbox = TRUE, pretty = TRUE)
   ## send request to botometer API
   r <- httr::POST(
-    "https://osome-botometer.p.mashape.com/2/check_account",
+    "https://botometer-pro.p.rapidapi.com/2/check_account",
     encode = "json",
     httr::add_headers(`X-Mashape-Key` = key),
     body = body
